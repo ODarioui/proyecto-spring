@@ -18,6 +18,8 @@ public class User {
     private Long id;
 
     private String name;
+    private String lastname1;
+    private String lastname2;
     private String email;
     private String password;
     private String phone;
@@ -30,10 +32,12 @@ public class User {
 
     private String status;
 
-    public User(Long id, String name, String email, String password, String phone, String address, Role role,
-            Date creationDate, String status) {
+    public User(Long id, String name, String lastname1, String lastname2, String email, String password, String phone,
+            String address, Role role, Date creationDate, String status) {
         this.id = id;
         this.name = name;
+        this.lastname1 = lastname1;
+        this.lastname2 = lastname2;
         this.email = email;
         this.password = password;
         this.phone = phone;
@@ -116,6 +120,22 @@ public class User {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getLastname1() {
+        return this.lastname1;
+    }
+
+    public void setLastname1(String lastname1) {
+        this.lastname1 = lastname1;
+    }
+
+    public String getLastname2() {
+        return this.lastname2;
+    }
+
+    public void setLastname2(String lastname2) {
+        this.lastname2 = lastname2;
     }
 
 }
