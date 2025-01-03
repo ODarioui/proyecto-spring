@@ -3,9 +3,6 @@ package com.nttdata.proyecto.rh.gestion_recursos_humanos.models;
 import jakarta.persistence.*;
 import java.util.Date;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 @Entity
 public class Employee {
 
