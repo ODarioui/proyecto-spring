@@ -3,6 +3,9 @@ package com.nttdata.proyecto.rh.gestion_recursos_humanos.models;
 import jakarta.persistence.*;
 import java.util.Date;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 @Entity
 public class Employee {
 
@@ -10,13 +13,13 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
     private String position;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.REMOVE)
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
