@@ -7,7 +7,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.EmployeeService;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.DepartmentRepository;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.EmployeeRepository;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Department;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Employee;
 
 @Service
@@ -15,6 +17,9 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     @Autowired
     private EmployeeRepository EmployeeRepository;
+
+    @Autowired
+    private DepartmentRepository DepartmentRepository;
     
     @Transactional
     public Employee registerEmployee(Employee employee){
@@ -62,6 +67,41 @@ public class EmployeeServiceImpl implements EmployeeService{
             throw new IllegalArgumentException("No existe el empleado con el id: " + id);
 
         EmployeeRepository.deleteById(id);
+    }
+
+    @Transactional
+    public Employee getEmployee(Long id){
+        Optional<Employee> foundEmployee = EmployeeRepository.findById(id);
+        
+        if(!foundEmployee.isPresent())
+            throw new IllegalArgumentException("No existe el empleado con el id: " + id);
+
+        return foundEmployee.get();
+    }
+
+    @Transactional
+    public void updateDepartmentPos(Long id, Long newDepartmentId, String newPosition){
+        Optional<Employee> foundEmployee = EmployeeRepository.findById(id);
+        Optional<Department> newDepartment = DepartmentRepository.findById(newDepartmentId);
+
+        if(!foundEmployee.isPresent())
+            throw new IllegalArgumentException("No existe el empleado con el id: " + id);
+        if(!newDepartment.isPresent())
+            throw new IllegalArgumentException("No existe el empleado con el id: " + id);
+
+        foundEmployee.get().setPosition(newPosition);
+        foundEmployee.get().setDepartment(newDepartment.get());
+
+    }
+
+    @Transactional
+    public void updateStatus(Long id, String newStatus){
+        Optional<Employee> foundEmployee = EmployeeRepository.findById(id);
+
+        if(!foundEmployee.isPresent())
+            throw new IllegalArgumentException("No existe el empleado con el id: " + id);
+        
+        foundEmployee.get().setStatus(newStatus);
     }
 
 
