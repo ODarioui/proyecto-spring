@@ -1,5 +1,6 @@
 package com.nttdata.proyecto.rh.gestion_recursos_humanos.models;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -7,6 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.util.Date;
+
 
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.enums.Role;
 
@@ -20,7 +22,14 @@ public class User {
     private String name;
     private String lastname1;
     private String lastname2;
+
+    @Column(nullable = false, unique = true)
     private String email;
+
+    @Column(nullable = false, unique = true)
+    private String username;
+
+    @Column(nullable = false)
     private String password;
     private String phone;
     private String address;
@@ -136,6 +145,15 @@ public class User {
 
     public void setLastname2(String lastname2) {
         this.lastname2 = lastname2;
+    }
+
+
+    public String getUsername() {
+        return this.username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
     }
 
 }
