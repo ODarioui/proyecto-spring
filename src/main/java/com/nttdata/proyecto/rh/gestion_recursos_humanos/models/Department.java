@@ -1,5 +1,7 @@
 package com.nttdata.proyecto.rh.gestion_recursos_humanos.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -12,8 +14,9 @@ public class Department {
     private String name;
     private String description;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "head_id")
+    @JsonIgnore
     private Employee head;
 
     // Getters and Setters

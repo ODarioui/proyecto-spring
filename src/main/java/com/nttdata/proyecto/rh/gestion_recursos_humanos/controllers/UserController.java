@@ -32,6 +32,14 @@ public class UserController {
         return "hola";
     }
 
- 
+    @PostMapping("/register")
+    public ResponseEntity<?> registerNewUser(@RequestBody User user) {
+        try {
+            User registeredUser = userService.registerUser(user);
+            return new ResponseEntity<>(registeredUser, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }
