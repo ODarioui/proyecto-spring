@@ -14,14 +14,14 @@ public class Employee {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private String position;
+    private Long department_id;
 
-    @ManyToOne(cascade = CascadeType.REMOVE)
-    @JoinColumn(name = "department_id", nullable = false)
-    private Department department;
+    private String position;
 
     private Date hireDate;
     private double salary;
+    private double bonuses;
+    private double deductions;
     private Date birthDate;
     private String status;
 
@@ -48,14 +48,6 @@ public class Employee {
 
     public void setPosition(String position) {
         this.position = position;
-    }
-
-    public Department getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(Department department) {
-        this.department = department;
     }
 
     public Date getHireDate() {
@@ -89,4 +81,30 @@ public class Employee {
     public void setStatus(String status) {
         this.status = status;
     }
+
+    public double getBonuses() {
+        return bonuses;
+    }
+
+    public void setBonuses(double bonuses) {
+        this.bonuses = bonuses;
+    }
+
+    public double getDeductions() {
+        return deductions;
+    }
+
+    public void setDeductions(double deductions) {
+        this.deductions = deductions;
+    }
+
+    public Long getDepartmentId() {
+        return department_id;
+    }
+
+    public void setDepartmentId(Long newDepartmentId) {
+        this.department_id = newDepartmentId;
+    }
+
+    
 }

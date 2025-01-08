@@ -96,5 +96,16 @@ public class EmployeeController {
         }
     }
 
+    @GetMapping("/get-salary/{id}")
+    public ResponseEntity<?> getSalary(@PathVariable Long id) {
+        try {
+            double netSalary = employeeService.getNetSalary(id);
+            return ResponseEntity.ok(netSalary);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+    
+
     
 }

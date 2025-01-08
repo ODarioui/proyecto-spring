@@ -50,11 +50,11 @@ public class EmployeeServiceImpl implements EmployeeService{
             throw new IllegalArgumentException("No existe el empleado con el id: " + id);
         
         oldEmployee.get().setBirthDate(newEmployee.getBirthDate());
-        oldEmployee.get().setDepartment(newEmployee.getDepartment());
         oldEmployee.get().setHireDate(newEmployee.getHireDate());
         oldEmployee.get().setPosition(newEmployee.getPosition());
         oldEmployee.get().setSalary(newEmployee.getSalary());
         oldEmployee.get().setStatus(newEmployee.getStatus());
+        oldEmployee.get().setDepartmentId(newEmployee.getDepartmentId());
 
         return EmployeeRepository.save(oldEmployee.get());
     }
@@ -90,7 +90,7 @@ public class EmployeeServiceImpl implements EmployeeService{
             throw new IllegalArgumentException("No existe el empleado con el id: " + id);
 
         foundEmployee.get().setPosition(newPosition);
-        foundEmployee.get().setDepartment(newDepartment.get());
+        foundEmployee.get().setDepartmentId(newDepartmentId);
 
     }
 
@@ -102,6 +102,18 @@ public class EmployeeServiceImpl implements EmployeeService{
             throw new IllegalArgumentException("No existe el empleado con el id: " + id);
         
         foundEmployee.get().setStatus(newStatus);
+    }
+
+    @Transactional
+    public double getNetSalary(Long id){
+        Optional<Employee> foundEmployee = EmployeeRepository.findById(id);
+
+        if(!foundEmployee.isPresent())
+            throw new IllegalArgumentException("No existe el empleado con el id: " + id);
+        
+        double netSalary = foundEmployee.get().getSalary() + foundEmployee.get().getBonuses() - foundEmployee.get().getDeductions();
+
+        return netSalary;
     }
 
 

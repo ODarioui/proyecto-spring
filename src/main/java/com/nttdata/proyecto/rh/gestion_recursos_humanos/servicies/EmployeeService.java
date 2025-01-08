@@ -19,5 +19,7 @@ public interface EmployeeService {
     public void updateDepartmentPos(Long id, Long newDepartmentId, String newPosition);
 
     public void updateStatus(Long id, String newStatus);
+
+    public double getNetSalary(Long id);
 }
 
