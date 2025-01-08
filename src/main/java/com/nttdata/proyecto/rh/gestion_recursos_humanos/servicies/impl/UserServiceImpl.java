@@ -1,8 +1,9 @@
 package com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.impl;
 
 import java.util.Date;
-import java.util.stream.Collector;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -16,7 +17,9 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.exceptions.InsufficientP
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.User;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.ChangePasswordDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.ChangeRoleDto;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.DeleteUserDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.UserDto;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.UserStatusDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.enums.Role;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.UserRepository;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.UserService;
@@ -104,6 +107,135 @@ public class UserServiceImpl implements UserService {
         }
 
         return toDto(user);
+    }
+
+    @Override
+    public Map<String, Object> deleteUsers(List<DeleteUserDto> usersDelete) {
+
+        Integer count = 1;
+        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> userMap;
+        User user = null;
+
+        for (DeleteUserDto userDelete : usersDelete) {
+            userMap = new HashMap<>();
+            userMap.put("User", userDelete);
+            try {
+                user = userRepository.findByIdOrUsername(userDelete.getId(), userDelete.getUsername());
+                userRepository.delete(user);
+                userMap.put("message", "Usuario eliminado");
+
+            } catch (Exception e) {
+                userMap.put("message", "No se pudo eliminar este usuario");
+                userMap.put("Error", e.getMessage());
+
+            }
+            map.put(count.toString(), userMap);
+            count++;
+        }
+
+        return map;
+    }
+
+    @Override
+    public void selfDelete() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        User user = userRepository.findByUsername(username).orElse(null);
+        userRepository.delete(user);
+    }
+
+    @Override
+    public UserDto updateAnyUser(User user) {
+        System.out.println(user.getUsername());
+
+        User userUpdate = userRepository.findByIdOrUsername(user.getId(), user.getUsername());
+        if (userUpdate.getRole().getValue() > 3 && userUpdate.getRole() != null) {
+            throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
+        }
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+
+        return toDto(user);
+
+    }
+
+    @Override
+    public UserDto updateEmployee(User user) {
+
+        User userUpdate = userRepository.findByIdOrUsername(user.getId(), user.getUsername());
+        if (userUpdate.getRole().getValue() > 2 && userUpdate.getRole() != null) {
+            throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
+        }
+
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
+
+        return toDto(user);
+    }
+
+    @Override
+    public UserDto statusUser(UserStatusDto userStatusDto) {
+
+        User userUpdate = userRepository.findByIdOrUsername(userStatusDto.getId(), userStatusDto.getUsername());
+        if (userUpdate.getRole().getValue() > 3 && userUpdate.getRole() != null) {
+            throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
+        }
+
+        userUpdate.setStatus(userStatusDto.getStatus());
+
+        return toDto(userUpdate);
+    }
+
+    @Override
+    public UserDto statusEmployee(UserStatusDto userStatusDto) {
+        User userUpdate = userRepository.findByIdOrUsername(userStatusDto.getId(), userStatusDto.getUsername());
+        if (userUpdate.getRole().getValue() > 2 && userUpdate.getRole() != null) {
+            throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
+        }
+
+        userUpdate.setStatus(userStatusDto.getStatus());
+
+        return toDto(userUpdate);
+    }
+
+    @Override
+    public Map<String, Object> allUsers() {
+
+        List<User> users = userRepository.findAll();
+        Map<String, Object> map = new HashMap<>();
+
+        for (User user : users) {
+            map.put(user.getId().toString(), toDto(user));
+        }
+
+        return map;
+    }
+
+    @Override
+    public Map<String, Object> allEmployees() {
+        List<User> users = userRepository.findAll();
+        Map<String, Object> map = new HashMap<>();
+
+        for (User user : users) {
+            if (user.getRole().getValue() < 3 || user.getRole() == null) {
+                map.put(user.getId().toString(), toDto(user));
+            }
+        }
+
+        return map;
+    }
+
+    @Override
+    public UserDto userInfo() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+
+        User user = userRepository.findByUsername(username).orElseThrow();
+
+        return toDto(user);
+
     }
 
     public static UserDto toDto(User user) {
