@@ -1,39 +1,20 @@
-package com.nttdata.proyecto.rh.gestion_recursos_humanos.models;
+package com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos;
 
-import jakarta.persistence.*;
-import java.util.Date;
+import java.sql.Date;
 
-@Entity
-public class Absence {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "employee_id", nullable = false)
-    private Employee employee;
-
+public class AbsenceRequest {
+    private Long employeeId;
     private String absenceType;
     private Date startDate;
     private Date endDate;
     private String status;
 
-    // Getters and Setters
-    public Long getId() {
-        return id;
+    public Long getEmployeeId() {
+        return employeeId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public Employee getEmployee() {
-        return employee;
-    }
-
-    public void setEmployee(Employee employee) {
-        this.employee = employee;
+    public void setEmployeeId(Long employeeId) {
+        this.employeeId = employeeId;
     }
 
     public String getAbsenceType() {
