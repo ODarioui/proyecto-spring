@@ -13,5 +13,13 @@ public interface EmployeeService {
     public Employee updateEmployee(Long id, Employee newEmployee);
 
     public void deleteEmployee(Long id);
+
+    public Employee getEmployee(Long id);
+    
+    public void updateDepartmentPos(Long id, Long newDepartmentId, String newPosition);
+
+    public void updateStatus(Long id, String newStatus);
+
+    public double getNetSalary(Long id);
 }
 

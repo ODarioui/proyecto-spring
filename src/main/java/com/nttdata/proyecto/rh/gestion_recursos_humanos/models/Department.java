@@ -1,7 +1,5 @@
 package com.nttdata.proyecto.rh.gestion_recursos_humanos.models;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import jakarta.persistence.*;
 
 @Entity
@@ -13,11 +11,6 @@ public class Department {
 
     private String name;
     private String description;
-
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "head_id")
-    @JsonIgnore
-    private Employee head;
 
     // Getters and Setters
     public Long getId() {
@@ -42,13 +35,5 @@ public class Department {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public Employee getHead() {
-        return head;
-    }
-
-    public void setHead(Employee head) {
-        this.head = head;
     }
 }
