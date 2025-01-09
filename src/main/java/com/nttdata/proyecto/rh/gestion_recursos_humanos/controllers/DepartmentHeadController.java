@@ -18,7 +18,7 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.EmployeeRep
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.DepartmentHeadService;
 
 @RestController
-@RequestMapping("/api/department-head")
+@RequestMapping("/api/v1/department-head")
 public class DepartmentHeadController {
 
     @Autowired
@@ -34,7 +34,8 @@ public class DepartmentHeadController {
     private DepartmentRepository departmentRepository;
 
     @PostMapping("/register/{departmentId}")
-    public ResponseEntity<DepartmentHead> registerDepartmentHead(@PathVariable Long departmentId, @RequestParam Long employeeId) {
+    public ResponseEntity<DepartmentHead> registerDepartmentHead(@PathVariable Long departmentId,
+            @RequestParam Long employeeId) {
         try {
             DepartmentHead departmentHead = departmentHeadService.registerDepartmentHead(departmentId, employeeId);
             return ResponseEntity.ok(departmentHead);
@@ -43,7 +44,7 @@ public class DepartmentHeadController {
             return ResponseEntity.badRequest().body(null);
         }
     }
-    
+
     @GetMapping("/get-department-head/{departmentId}")
     public ResponseEntity<DepartmentHead> getDepartmentHead(@PathVariable Long departmentId) {
         try {
@@ -52,18 +53,19 @@ public class DepartmentHeadController {
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
         }
-        
+
     }
 
     @PostMapping("/set-department-head/{id}")
-    public ResponseEntity<?> setDepartmentHead(@PathVariable Long id, @RequestParam Long employeeId,  @RequestParam Long departmentId) {
+    public ResponseEntity<?> setDepartmentHead(@PathVariable Long id, @RequestParam Long employeeId,
+            @RequestParam Long departmentId) {
         try {
-            departmentHeadService.setDepartmentHead(id,departmentId,employeeId);
+            departmentHeadService.setDepartmentHead(id, departmentId, employeeId);
             return ResponseEntity.ok("Departamento y posiciones nuevas actualizadas con éxito.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
         }
-        
+
     }
 
 }

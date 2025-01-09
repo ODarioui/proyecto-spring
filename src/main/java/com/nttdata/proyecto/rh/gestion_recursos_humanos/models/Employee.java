@@ -10,11 +10,11 @@ public class Employee {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private Long department_id;
+    private Long departmentId;
 
     private String position;
 
@@ -99,12 +99,11 @@ public class Employee {
     }
 
     public Long getDepartmentId() {
-        return department_id;
+        return departmentId;
     }
 
     public void setDepartmentId(Long newDepartmentId) {
-        this.department_id = newDepartmentId;
+        this.departmentId = newDepartmentId;
     }
 
-    
 }
