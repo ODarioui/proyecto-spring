@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Employee;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.EmployeeRequest;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.EmployeeService;
 import org.springframework.web.bind.annotation.PutMapping;
 
@@ -27,9 +28,9 @@ public class EmployeeController {
     private EmployeeService employeeService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerEmployee(@RequestBody Employee employee) {
+    public ResponseEntity<?> registerEmployee(@RequestBody EmployeeRequest request) {
         try {
-            Employee registeredEmployee = employeeService.registerEmployee(employee);
+            Employee registeredEmployee = employeeService.registerEmployee(request);
             return new ResponseEntity<>(registeredEmployee, HttpStatus.CREATED);
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

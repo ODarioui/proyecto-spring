@@ -1,5 +1,6 @@
 package com.nttdata.proyecto.rh.gestion_recursos_humanos.models;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,7 +19,7 @@ public class DepartmentHead {
     @JoinColumn(name = "department_id", nullable = false)
     private Department department;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 

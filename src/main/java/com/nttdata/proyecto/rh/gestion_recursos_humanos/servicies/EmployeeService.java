@@ -3,10 +3,11 @@ package com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies;
 import java.util.List;
 
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Employee;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.EmployeeRequest;
 
 public interface EmployeeService {
     
-    public Employee registerEmployee(Employee employee);
+    public Employee registerEmployee(EmployeeRequest request);
 
     public List<Employee> getEmployees();
 
