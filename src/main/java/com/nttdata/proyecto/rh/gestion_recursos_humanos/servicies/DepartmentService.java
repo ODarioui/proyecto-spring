@@ -4,6 +4,7 @@ import java.util.Map;
 
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Department;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.DepartmentHead;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.ProjectToDepartment;
 
 public interface DepartmentService {
 
@@ -16,4 +17,6 @@ public interface DepartmentService {
     public DepartmentHead addHeadToDepartment(DepartmentHead departmentHead);
 
     public Map<String, Object> getEmployeesByDepartment(Long department_id);
+
+    public ProjectToDepartment addProjectToDepartment(ProjectToDepartment projectToDepartment);
 }

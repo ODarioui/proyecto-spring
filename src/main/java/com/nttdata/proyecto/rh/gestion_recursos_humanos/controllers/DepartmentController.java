@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Department;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.DepartmentHead;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.ProjectToDepartment;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.ResponseDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.DepartmentService;
 
@@ -98,6 +99,18 @@ public class DepartmentController {
         responseDto.setMessage("Empleados del departamento con id " + department_id.toString());
         responseDto.setStatus(HttpStatus.OK.value());
         responseDto.setObject(departmentService.getEmployeesByDepartment(department_id));
+
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @PutMapping("/give-project")
+    public ResponseEntity<ResponseDto> putMethodName(@RequestBody ProjectToDepartment projectToDepartment) {
+        ResponseDto responseDto = new ResponseDto();
+
+        responseDto.setDate(new Date());
+        responseDto.setMessage("Proyecto asignado");
+        responseDto.setStatus(HttpStatus.OK.value());
+        responseDto.setObject(departmentService.addProjectToDepartment(projectToDepartment));
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }

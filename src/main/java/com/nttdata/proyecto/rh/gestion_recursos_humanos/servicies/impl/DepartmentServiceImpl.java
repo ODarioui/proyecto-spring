@@ -12,9 +12,12 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.exceptions.DepartmentExc
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Department;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.DepartmentHead;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Employee;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Project;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.ProjectToDepartment;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.DepartmentHeadRepository;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.DepartmentRepository;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.EmployeeRepository;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.ProjectRepository;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.DepartmentService;
 
 @Service
@@ -28,6 +31,9 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
+
+    @Autowired
+    private ProjectRepository projectRepository;
 
     @Override
     public Department createDepartment(Department department) {
@@ -84,8 +90,9 @@ public class DepartmentServiceImpl implements DepartmentService {
         Map<String, Object> map = new HashMap<>();
         List<Employee> employees = null;
         try {
+
             department = departmentRepository.findById(department_id);
-            if (department == null) {
+            if (department.isEmpty()) {
                 throw new DepartmentException("El departamento con id " + department_id.toString() + " no existe");
             }
             employees = employeeRepository.findByDepartmentId(department_id);
@@ -93,6 +100,35 @@ public class DepartmentServiceImpl implements DepartmentService {
             map.put("department", department);
             map.put("employees", employees);
             return map;
+        } catch (Exception e) {
+            throw new DepartmentException(e.getMessage());
+        }
+    }
+
+    @Override
+    public ProjectToDepartment addProjectToDepartment(ProjectToDepartment projectToDepartment) {
+        Department department;
+        Project project;
+        try {
+
+            department = departmentRepository.findById(projectToDepartment.getDepartment().getId()).orElse(null);
+
+            if (department == null) {
+                throw new DepartmentException("El departamneto no existe");
+            }
+
+            project = projectRepository.findById(projectToDepartment.getProject().getId()).orElse(null);
+            if (project == null) {
+                throw new DepartmentException("El proyecto no existe");
+            }
+            department.getProjects().add(project);
+
+            departmentRepository.save(department);
+
+            projectToDepartment.getDepartment().setName(department.getName());
+            projectToDepartment.getProject().setTitle(project.getTitle());
+
+            return projectToDepartment;
         } catch (Exception e) {
             throw new DepartmentException(e.getMessage());
         }
