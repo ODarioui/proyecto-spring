@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Employee;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.EmployeeRequest;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.AbsenceService;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.EmployeeService;
 import org.springframework.web.bind.annotation.PutMapping;
 
@@ -26,6 +27,9 @@ public class EmployeeController {
 
     @Autowired
     private EmployeeService employeeService;
+
+    @Autowired
+    private AbsenceService absenceService;
 
     @PostMapping("/register")
     public ResponseEntity<?> registerEmployee(@RequestBody EmployeeRequest request) {
@@ -106,7 +110,16 @@ public class EmployeeController {
             return ResponseEntity.badRequest().body(null);
         }
     }
-    
 
+    @PutMapping("/calculate-absences/{employeeId}")
+    public ResponseEntity<String> calculateAbsenceDays(@PathVariable Long employeeId) {
+        try {
+            int totalDays = absenceService.calculateDaysAbsence(employeeId);
+            return ResponseEntity.ok("Total absence days: " + totalDays);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+    
     
 }

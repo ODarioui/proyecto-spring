@@ -24,6 +24,7 @@ public class Employee {
     private double deductions;
     private Date birthDate;
     private String status;
+    private int totalAbsenceDays;
 
     // Getters and Setters
     public Long getId() {
@@ -106,5 +107,12 @@ public class Employee {
         this.department_id = newDepartmentId;
     }
 
+    public int getTotalAbsenceDays() {
+        return totalAbsenceDays;
+    }
+
+    public void setTotalAbsenceDays(int totalAbsenceDays) {
+        this.totalAbsenceDays = totalAbsenceDays;
+    }
     
 }

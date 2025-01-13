@@ -59,7 +59,6 @@ public class EmployeeServiceImpl implements EmployeeService{
         employee.setBirthDate(request.getBirthDate());
         employee.setStatus(request.getStatus());
 
-        // Guardar el empleado
         return employeeRepository.save(employee);
     }
 

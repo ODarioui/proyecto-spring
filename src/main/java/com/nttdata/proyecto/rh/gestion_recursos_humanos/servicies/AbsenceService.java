@@ -9,8 +9,10 @@ public interface AbsenceService {
 
     public Absence registerAbsence(AbsenceRequest newAbsence);
     
-    public Absence updateStatus(Long absenceId, String newStatus);
+    public void updateStatus(Long absenceId, String newStatus);
 
-    public List<Absence> getAbsenceHistory(Long userId);
+    public List<Absence> getAbsenceHistory(Long employeeId);
+
+    public int calculateDaysAbsence(Long employeeId);
     
 }
