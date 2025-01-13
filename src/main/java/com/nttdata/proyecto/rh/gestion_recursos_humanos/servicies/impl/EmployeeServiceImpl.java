@@ -76,9 +76,9 @@ public class EmployeeServiceImpl implements EmployeeService{
     public Employee updateEmployee(Long id, Employee newEmployee){
         Optional<Employee> oldEmployee = employeeRepository.findById(id);
 
-        if(!oldEmployee.isPresent())
+        if (!oldEmployee.isPresent())
             throw new IllegalArgumentException("No existe el empleado con el id: " + id);
-        
+
         oldEmployee.get().setBirthDate(newEmployee.getBirthDate());
         oldEmployee.get().setHireDate(newEmployee.getHireDate());
         oldEmployee.get().setPosition(newEmployee.getPosition());
@@ -93,7 +93,7 @@ public class EmployeeServiceImpl implements EmployeeService{
     public void deleteEmployee(Long id){
         Optional<Employee> oldEmployee = employeeRepository.findById(id);
 
-        if(!oldEmployee.isPresent())
+        if (!oldEmployee.isPresent())
             throw new IllegalArgumentException("No existe el empleado con el id: " + id);
         
         List<DepartmentHead> departments = departmentHeadRepository.findByEmployee(oldEmployee.get());
@@ -123,9 +123,9 @@ public class EmployeeServiceImpl implements EmployeeService{
         Optional<Employee> foundEmployee = employeeRepository.findById(id);
         Optional<Department> newDepartment = departmentRepository.findById(newDepartmentId);
 
-        if(!foundEmployee.isPresent())
+        if (!foundEmployee.isPresent())
             throw new IllegalArgumentException("No existe el empleado con el id: " + id);
-        if(!newDepartment.isPresent())
+        if (!newDepartment.isPresent())
             throw new IllegalArgumentException("No existe el empleado con el id: " + id);
 
         foundEmployee.get().setPosition(newPosition);
@@ -137,9 +137,9 @@ public class EmployeeServiceImpl implements EmployeeService{
     public void updateStatus(Long id, String newStatus){
         Optional<Employee> foundEmployee = employeeRepository.findById(id);
 
-        if(!foundEmployee.isPresent())
+        if (!foundEmployee.isPresent())
             throw new IllegalArgumentException("No existe el empleado con el id: " + id);
-        
+
         foundEmployee.get().setStatus(newStatus);
     }
 
@@ -147,13 +147,13 @@ public class EmployeeServiceImpl implements EmployeeService{
     public double getNetSalary(Long id){
         Optional<Employee> foundEmployee = employeeRepository.findById(id);
 
-        if(!foundEmployee.isPresent())
+        if (!foundEmployee.isPresent())
             throw new IllegalArgumentException("No existe el empleado con el id: " + id);
-        
-        double netSalary = foundEmployee.get().getSalary() + foundEmployee.get().getBonuses() - foundEmployee.get().getDeductions();
+
+        double netSalary = foundEmployee.get().getSalary() + foundEmployee.get().getBonuses()
+                - foundEmployee.get().getDeductions();
 
         return netSalary;
     }
-
 
 }

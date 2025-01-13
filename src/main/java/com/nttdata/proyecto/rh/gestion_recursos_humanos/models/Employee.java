@@ -14,7 +14,7 @@ public class Employee {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    private Long department_id;
+    private Long departmentId;
 
     private String position;
 
@@ -100,19 +100,12 @@ public class Employee {
     }
 
     public Long getDepartmentId() {
-        return department_id;
+        return departmentId;
     }
 
     public void setDepartmentId(Long newDepartmentId) {
-        this.department_id = newDepartmentId;
+        this.departmentId = newDepartmentId;
     }
 
-    public int getTotalAbsenceDays() {
-        return totalAbsenceDays;
-    }
-
-    public void setTotalAbsenceDays(int totalAbsenceDays) {
-        this.totalAbsenceDays = totalAbsenceDays;
-    }
     
 }
