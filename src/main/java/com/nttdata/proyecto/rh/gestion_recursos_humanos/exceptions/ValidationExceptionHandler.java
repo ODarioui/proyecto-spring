@@ -27,4 +27,17 @@ public class ValidationExceptionHandler {
 
         return ResponseEntity.badRequest().body(errorMessage);
     }
+
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ErrorMessage> customException(CustomException e) {
+
+        ErrorMessage errorMessage = new ErrorMessage();
+
+        errorMessage.setTitle("Department Service");
+        errorMessage.setMessage(e.getMessage());
+        errorMessage.setDate(new Date());
+        errorMessage.setStatus(HttpStatus.BAD_REQUEST.value());
+
+        return ResponseEntity.badRequest().body(errorMessage);
+    }
 }

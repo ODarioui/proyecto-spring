@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.DepartmentHead;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.DepartmentHeadRepository;
-import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.DepartmentRepository;
-import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.EmployeeRepository;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.DepartmentHeadService;
 
 @RestController
@@ -26,12 +24,6 @@ public class DepartmentHeadController {
 
     @Autowired
     private DepartmentHeadRepository departmentHeadRepository;
-
-    @Autowired
-    private EmployeeRepository employeeRepository;
-
-    @Autowired
-    private DepartmentRepository departmentRepository;
 
     @PostMapping("/register/{departmentId}")
     public ResponseEntity<DepartmentHead> registerDepartmentHead(@PathVariable Long departmentId,

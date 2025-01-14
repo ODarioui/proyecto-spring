@@ -1,6 +1,7 @@
 package com.nttdata.proyecto.rh.gestion_recursos_humanos.models;
 
 import jakarta.persistence.*;
+
 import java.util.Date;
 
 @Entity
@@ -19,15 +20,14 @@ public class Employee {
     private String position;
 
     private Date hireDate;
-    private double salary;
-    private double bonuses;
-    private double deductions;
+    private Double salary;
+    private Double bonuses;
+    private Double deductions;
     private Date birthDate;
     private String status;
 
-    // Getters and Setters
     public Long getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(Long id) {
@@ -35,15 +35,23 @@ public class Employee {
     }
 
     public User getUser() {
-        return user;
+        return this.user;
     }
 
     public void setUser(User user) {
         this.user = user;
     }
 
+    public Long getDepartmentId() {
+        return this.departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
+
     public String getPosition() {
-        return position;
+        return this.position;
     }
 
     public void setPosition(String position) {
@@ -51,23 +59,39 @@ public class Employee {
     }
 
     public Date getHireDate() {
-        return hireDate;
+        return this.hireDate;
     }
 
     public void setHireDate(Date hireDate) {
         this.hireDate = hireDate;
     }
 
-    public double getSalary() {
-        return salary;
+    public Double getSalary() {
+        return this.salary;
     }
 
-    public void setSalary(double salary) {
+    public void setSalary(Double salary) {
         this.salary = salary;
     }
 
+    public Double getBonuses() {
+        return this.bonuses;
+    }
+
+    public void setBonuses(Double bonuses) {
+        this.bonuses = bonuses;
+    }
+
+    public Double getDeductions() {
+        return this.deductions;
+    }
+
+    public void setDeductions(Double deductions) {
+        this.deductions = deductions;
+    }
+
     public Date getBirthDate() {
-        return birthDate;
+        return this.birthDate;
     }
 
     public void setBirthDate(Date birthDate) {
@@ -75,35 +99,11 @@ public class Employee {
     }
 
     public String getStatus() {
-        return status;
+        return this.status;
     }
 
     public void setStatus(String status) {
         this.status = status;
-    }
-
-    public double getBonuses() {
-        return bonuses;
-    }
-
-    public void setBonuses(double bonuses) {
-        this.bonuses = bonuses;
-    }
-
-    public double getDeductions() {
-        return deductions;
-    }
-
-    public void setDeductions(double deductions) {
-        this.deductions = deductions;
-    }
-
-    public Long getDepartmentId() {
-        return departmentId;
-    }
-
-    public void setDepartmentId(Long newDepartmentId) {
-        this.departmentId = newDepartmentId;
     }
 
 }
