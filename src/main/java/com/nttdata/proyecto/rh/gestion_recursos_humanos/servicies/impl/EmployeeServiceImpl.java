@@ -16,10 +16,10 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Absence;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Department;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.DepartmentHead;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Employee;
-import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.EmployeeRequest;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.EmployeeDto;
 
 @Service
-public class EmployeeServiceImpl implements EmployeeService{
+public class EmployeeServiceImpl implements EmployeeService {
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -35,15 +35,15 @@ public class EmployeeServiceImpl implements EmployeeService{
 
     @Autowired
     private AbsenceRepository absenceRepository;
-    
+
     @Transactional
-    public Employee registerEmployee(EmployeeRequest request){
-        
+    public Employee registerEmployee(EmployeeDto request) {
+
         if (request.getUserId() == null) {
             throw new IllegalArgumentException("Usuario no encontrado");
         }
 
-        if(request.getDepartmentId() == null){
+        if (request.getDepartmentId() == null) {
             throw new IllegalArgumentException("Departamento no encontrado");
         }
 
@@ -63,17 +63,17 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Transactional
-    public List<Employee> getEmployees(){
+    public List<Employee> getEmployees() {
         List<Employee> listEmployees = employeeRepository.findAll();
-        
-        if(listEmployees.isEmpty())
+
+        if (listEmployees.isEmpty())
             throw new IllegalArgumentException("No hay empleados registrados");
 
         return listEmployees;
     }
 
     @Transactional
-    public Employee updateEmployee(Long id, Employee newEmployee){
+    public Employee updateEmployee(Long id, Employee newEmployee) {
         Optional<Employee> oldEmployee = employeeRepository.findById(id);
 
         if (!oldEmployee.isPresent())
@@ -90,12 +90,12 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Transactional
-    public void deleteEmployee(Long id){
+    public void deleteEmployee(Long id) {
         Optional<Employee> oldEmployee = employeeRepository.findById(id);
 
         if (!oldEmployee.isPresent())
             throw new IllegalArgumentException("No existe el empleado con el id: " + id);
-        
+
         List<DepartmentHead> departments = departmentHeadRepository.findByEmployee(oldEmployee.get());
         for (DepartmentHead department : departments) {
             department.setEmployee(null);
@@ -109,17 +109,17 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Transactional
-    public Employee getEmployee(Long id){
+    public Employee getEmployee(Long id) {
         Optional<Employee> foundEmployee = employeeRepository.findById(id);
-        
-        if(!foundEmployee.isPresent())
+
+        if (!foundEmployee.isPresent())
             throw new IllegalArgumentException("No existe el empleado con el id: " + id);
 
         return foundEmployee.get();
     }
 
     @Transactional
-    public void updateDepartmentPos(Long id, Long newDepartmentId, String newPosition){
+    public void updateDepartmentPos(Long id, Long newDepartmentId, String newPosition) {
         Optional<Employee> foundEmployee = employeeRepository.findById(id);
         Optional<Department> newDepartment = departmentRepository.findById(newDepartmentId);
 
@@ -134,7 +134,7 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Transactional
-    public void updateStatus(Long id, String newStatus){
+    public void updateStatus(Long id, String newStatus) {
         Optional<Employee> foundEmployee = employeeRepository.findById(id);
 
         if (!foundEmployee.isPresent())
@@ -144,7 +144,7 @@ public class EmployeeServiceImpl implements EmployeeService{
     }
 
     @Transactional
-    public double getNetSalary(Long id){
+    public double getNetSalary(Long id) {
         Optional<Employee> foundEmployee = employeeRepository.findById(id);
 
         if (!foundEmployee.isPresent())
@@ -168,7 +168,8 @@ public class EmployeeServiceImpl implements EmployeeService{
         List<Absence> absences = absenceRepository.findByEmployee(foundEmployee.get());
 
         for (Absence absence : absences) {
-            if ("Vacaciones".equalsIgnoreCase(absence.getAbsenceType()) && "Aprobada".equalsIgnoreCase(absence.getStatus())) {
+            if ("Vacaciones".equalsIgnoreCase(absence.getAbsenceType())
+                    && "Aprobada".equalsIgnoreCase(absence.getStatus())) {
                 long diffInMillis = absence.getEndDate().getTime() - absence.getStartDate().getTime();
                 consumedDays += (int) (diffInMillis / (1000 * 60 * 60 * 24)) + 1;
             }
