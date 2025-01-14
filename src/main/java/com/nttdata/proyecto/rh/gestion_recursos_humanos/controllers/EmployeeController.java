@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Employee;
-import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.EmployeeRequest;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.EmployeeDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.AbsenceService;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.EmployeeService;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -32,7 +32,7 @@ public class EmployeeController {
     private AbsenceService absenceService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerEmployee(@RequestBody EmployeeRequest request) {
+    public ResponseEntity<?> registerEmployee(@RequestBody EmployeeDto request) {
         try {
             Employee registeredEmployee = employeeService.registerEmployee(request);
             return new ResponseEntity<>(registeredEmployee, HttpStatus.CREATED);
