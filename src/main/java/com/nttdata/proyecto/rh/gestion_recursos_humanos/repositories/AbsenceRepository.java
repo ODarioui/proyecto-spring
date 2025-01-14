@@ -12,4 +12,6 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Employee;
 @Repository
 public interface AbsenceRepository extends JpaRepository<Absence, Long>{
     List<Absence> findByEmployee(Employee employee);
+
+    List<Absence> findByEmployeeAndAbsenceType(Employee employee, String absenceType);
 }

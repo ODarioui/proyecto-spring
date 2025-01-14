@@ -2,9 +2,9 @@ package com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos;
 
 import java.sql.Date;
 
-public class EmployeeRequest {
-    private Long userId; // ID del usuario asociado al empleado
-    private Long departmentId; // ID del departamento
+public class EmployeeDto {
+    private Long userId; 
+    private Long departmentId; 
     private String position;
     private Date hireDate;
     private double salary;

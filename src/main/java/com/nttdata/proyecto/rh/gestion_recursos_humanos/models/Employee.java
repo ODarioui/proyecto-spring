@@ -25,6 +25,9 @@ public class Employee {
     private Double deductions;
     private Date birthDate;
     private String status;
+    private int totalAbsenceDays;
+    private int availableVacationDays = 25;
+    private int usedVacationDays = 0;
 
     public Long getId() {
         return this.id;
@@ -104,6 +107,30 @@ public class Employee {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public int getTotalAbsenceDays() {
+        return totalAbsenceDays;
+    }
+
+    public void setTotalAbsenceDays(int totalAbsenceDays) {
+        this.totalAbsenceDays = totalAbsenceDays;
+    }
+
+    public int getAvailableVacationDays() {
+        return availableVacationDays;
+    }
+
+    public void setAvailableVacationDays(int availableVacationDays) {
+        this.availableVacationDays = availableVacationDays;
+    }
+
+    public int getUsedVacationDays() {
+        return usedVacationDays;
+    }
+
+    public void setUsedVacationDays(int usedVacationDays) {
+        this.usedVacationDays = usedVacationDays;
     }
 
 }

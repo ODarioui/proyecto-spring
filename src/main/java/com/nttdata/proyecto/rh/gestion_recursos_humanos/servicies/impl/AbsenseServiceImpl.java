@@ -8,10 +8,11 @@ import org.springframework.stereotype.Service;
 
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Absence;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Employee;
-import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.AbsenceRequest;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.AbsenceRequestDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.AbsenceRepository;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.EmployeeRepository;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.AbsenceService;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.NotificationService;
 
 @Service
 public class AbsenseServiceImpl implements AbsenceService{
@@ -22,23 +23,29 @@ public class AbsenseServiceImpl implements AbsenceService{
     @Autowired
     private AbsenceRepository absenceRepository;
 
-    public Absence registerAbsence (AbsenceRequest newAbsence){
+    @Autowired
+    private NotificationService notificationService;
+
+    public Absence registerAbsence (AbsenceRequestDto newAbsence){
         Optional<Employee> employee = employeeRepository.findById(newAbsence.getEmployeeId());
 
         if(!employee.isPresent())
-            throw new IllegalArgumentException("No existe el departamento con el id: " + employee.get().getId());
+            throw new IllegalArgumentException("No existe el empleado con el id: " + employee.get().getId());
     
+        if(newAbsence.getStartDate().after(newAbsence.getEndDate()))
+            throw new IllegalArgumentException("La fecha de inicio debe ser anterior a la fecha de fin.");
+
         Absence absence = new Absence();
         absence.setEmployee(employee.get());
         absence.setAbsenceType(newAbsence.getAbsenceType());
         absence.setStartDate(newAbsence.getStartDate());
         absence.setEndDate(newAbsence.getEndDate());
-        absence.setStatus(newAbsence.getStatus());
+        absence.setStatus("Pendiente");
 
         return absenceRepository.save(absence);
     }
 
-    public Absence updateStatus(Long absenceId, String newStatus){
+    public void updateStatus(Long absenceId, String newStatus){
         Optional<Absence> absence = absenceRepository.findById(absenceId);
 
         if(!absence.isPresent())
@@ -46,13 +53,78 @@ public class AbsenseServiceImpl implements AbsenceService{
 
         absence.get().setStatus(newStatus);
 
-        return absenceRepository.save(absence.get());
+        absenceRepository.save(absence.get());
+
+        Employee employee = absence.get().getEmployee();
+
+        int totalDays = calculateDaysAbsence(employee.getId());
+        if (totalDays > 30) {
+            notificationService.sendNotification(
+                    employee.getUser().getEmail(),
+                    "Alerta de ausencias",
+                    "Has superado el límite permitido de " + 30 + " días de ausencia. Total: " + totalDays + " días." 
+            );
+            newStatus = "Rechazada";
+        }
+
+        if ("Aprobada".equalsIgnoreCase(newStatus)) {
+            employee.setTotalAbsenceDays(totalDays);
+            notificationService.printNotification(
+                    employee.getUser().getEmail(),
+                    "Ausencia aprobada",
+                    "Tu ausencia del " + absence.get().getStartDate() + " al " + absence.get().getEndDate() + " ha sido aprobada. Total días de ausencia: " + totalDays
+            );
+        } else if ("Rechazada".equalsIgnoreCase(newStatus)) {
+            notificationService.printNotification(
+                    employee.getUser().getEmail(),
+                    "Ausencia rechazada",
+                    "Tu ausencia del " + absence.get().getStartDate() + " al " + absence.get().getEndDate() + " ha sido rechazada."
+            );
+        }
+
+        employeeRepository.save(employee);
     }
 
-    public List<Absence> getAbsenceHistory(Long userId){
-        List<Absence> lista = null;
+    public List<Absence> getAbsenceHistory(Long employeeId){
+        Optional<Employee> employee = employeeRepository.findById(employeeId);
 
-        return lista;
+        if(!employee.isPresent())
+            throw new IllegalArgumentException("No existe el empleado con el id: " + employeeId);
+
+        List<Absence> history = absenceRepository.findByEmployee(employee.get());
+
+        return history;
+    }
+
+    public int calculateDaysAbsence(Long employeeId){
+        int totalDays = 0;
+        Optional<Employee> employee = employeeRepository.findById(employeeId);
+
+        if(!employee.isPresent())
+            throw new IllegalArgumentException("No existe el empleado con el id: " + employeeId);
+
+        List<Absence> history = absenceRepository.findByEmployee(employee.get());
+
+        for (Absence absence : history) {
+            long difference = absence.getEndDate().getTime() - absence.getStartDate().getTime();
+            totalDays += (difference / (1000*60*60*24))%365;
+        }
+
+        employee.get().setTotalAbsenceDays(totalDays);
+        employeeRepository.save(employee.get());
+
+        return totalDays;
+    }
+
+    public List<Absence> getVacationHistory(Long employeeId) {
+        Optional<Employee> foundEmployee = employeeRepository.findById(employeeId);
+
+        if (!foundEmployee.isPresent()) {
+            throw new IllegalArgumentException("No existe el empleado con el id: " + employeeId);
+        }
+
+        Employee employee = foundEmployee.get();
+        return absenceRepository.findByEmployeeAndAbsenceType(employee, "Vacaciones");
     }
 
 }
