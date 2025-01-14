@@ -1,7 +1,10 @@
 package com.nttdata.proyecto.rh.gestion_recursos_humanos.models;
 
 import jakarta.persistence.*;
+
 import java.util.Date;
+
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.enums.PayrollStauts;
 
 @Entity
 public class Payroll {
@@ -14,16 +17,22 @@ public class Payroll {
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 
+    @ManyToOne
+    @JoinColumn(name = "payroll_cycle_id")
+    private PayrollCycle payrollCycle;
+
     private Date paymentDate;
-    private double baseSalary;
-    private double bonuses;
-    private double deductions;
-    private double netSalary;
+    private Double baseSalary;
+    private Double bonuses;
+    private Double deductions;
+    private Double netSalary;
     private String paymentStatus;
 
-    // Getters and Setters
+    @Enumerated(EnumType.STRING)
+    private PayrollStauts stauts;
+
     public Long getId() {
-        return id;
+        return this.id;
     }
 
     public void setId(Long id) {
@@ -31,7 +40,7 @@ public class Payroll {
     }
 
     public Employee getEmployee() {
-        return employee;
+        return this.employee;
     }
 
     public void setEmployee(Employee employee) {
@@ -39,50 +48,67 @@ public class Payroll {
     }
 
     public Date getPaymentDate() {
-        return paymentDate;
+        return this.paymentDate;
     }
 
     public void setPaymentDate(Date paymentDate) {
         this.paymentDate = paymentDate;
     }
 
-    public double getBaseSalary() {
-        return baseSalary;
+    public Double getBaseSalary() {
+        return this.baseSalary;
     }
 
-    public void setBaseSalary(double baseSalary) {
+    public void setBaseSalary(Double baseSalary) {
         this.baseSalary = baseSalary;
     }
 
-    public double getBonuses() {
-        return bonuses;
+    public Double getBonuses() {
+        return this.bonuses;
     }
 
-    public void setBonuses(double bonuses) {
+    public void setBonuses(Double bonuses) {
         this.bonuses = bonuses;
     }
 
-    public double getDeductions() {
-        return deductions;
+    public Double getDeductions() {
+        return this.deductions;
     }
 
-    public void setDeductions(double deductions) {
+    public void setDeductions(Double deductions) {
         this.deductions = deductions;
     }
 
-    public double getNetSalary() {
-        return netSalary;
+    public Double getNetSalary() {
+        return this.netSalary;
     }
 
-    public void setNetSalary(double netSalary) {
+    public void setNetSalary(Double netSalary) {
         this.netSalary = netSalary;
     }
 
     public String getPaymentStatus() {
-        return paymentStatus;
+        return this.paymentStatus;
     }
 
     public void setPaymentStatus(String paymentStatus) {
         this.paymentStatus = paymentStatus;
     }
+
+    public PayrollStauts getStauts() {
+        return this.stauts;
+    }
+
+    public void setStauts(PayrollStauts stauts) {
+        this.stauts = stauts;
+    }
+
+    public PayrollCycle getPayrollCycle() {
+        return this.payrollCycle;
+    }
+
+    public void setPayrollCycle(PayrollCycle payrollCycle) {
+        this.payrollCycle = payrollCycle;
+    }
+
 }

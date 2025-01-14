@@ -1,7 +1,6 @@
 package com.nttdata.proyecto.rh.gestion_recursos_humanos.controllers;
 
 import java.util.Date;
-import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
