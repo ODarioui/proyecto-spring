@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Absence;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Employee;
-import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.AbsenceRequest;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.AbsenceRequestDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.AbsenceRepository;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.EmployeeRepository;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.AbsenceService;
@@ -26,18 +26,21 @@ public class AbsenseServiceImpl implements AbsenceService{
     @Autowired
     private NotificationService notificationService;
 
-    public Absence registerAbsence (AbsenceRequest newAbsence){
+    public Absence registerAbsence (AbsenceRequestDto newAbsence){
         Optional<Employee> employee = employeeRepository.findById(newAbsence.getEmployeeId());
 
         if(!employee.isPresent())
             throw new IllegalArgumentException("No existe el empleado con el id: " + employee.get().getId());
     
+        if(newAbsence.getStartDate().after(newAbsence.getEndDate()))
+            throw new IllegalArgumentException("La fecha de inicio debe ser anterior a la fecha de fin.");
+
         Absence absence = new Absence();
         absence.setEmployee(employee.get());
         absence.setAbsenceType(newAbsence.getAbsenceType());
         absence.setStartDate(newAbsence.getStartDate());
         absence.setEndDate(newAbsence.getEndDate());
-        absence.setStatus(newAbsence.getStatus());
+        absence.setStatus("Pendiente");
 
         return absenceRepository.save(absence);
     }
@@ -111,6 +114,17 @@ public class AbsenseServiceImpl implements AbsenceService{
         employeeRepository.save(employee.get());
 
         return totalDays;
+    }
+
+    public List<Absence> getVacationHistory(Long employeeId) {
+        Optional<Employee> foundEmployee = employeeRepository.findById(employeeId);
+
+        if (!foundEmployee.isPresent()) {
+            throw new IllegalArgumentException("No existe el empleado con el id: " + employeeId);
+        }
+
+        Employee employee = foundEmployee.get();
+        return absenceRepository.findByEmployeeAndAbsenceType(employee, "Vacaciones");
     }
 
 }

@@ -121,5 +121,14 @@ public class EmployeeController {
         }
     }
     
+    @GetMapping("/vacation-balance/{employeeId}")
+    public ResponseEntity<String> getVacationBalance(@PathVariable Long employeeId) {
+        try {
+            int availableDays = employeeService.calculateAvailableVacationDays(employeeId);
+            return ResponseEntity.ok("El saldo de días de vacaciones disponibles es: " + availableDays);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
     
 }

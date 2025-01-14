@@ -3,7 +3,7 @@ package com.nttdata.proyecto.rh.gestion_recursos_humanos.controllers;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Absence;
-import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.AbsenceRequest;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.AbsenceRequestDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.AbsenceService;
 
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,7 +26,7 @@ public class AbsenceController {
     private AbsenceService absenceService;
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerAbsence(@RequestBody AbsenceRequest newAbsence) {
+    public ResponseEntity<?> registerAbsence(@RequestBody AbsenceRequestDto newAbsence) {
         try {
             Absence registeredAbsence = absenceService.registerAbsence(newAbsence);
             return new ResponseEntity<>(registeredAbsence, HttpStatus.CREATED);
@@ -62,6 +62,16 @@ public class AbsenceController {
         try {
             List<Absence> history = absenceService.getAbsenceHistory(id);
             return ResponseEntity.ok(history);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+
+    @GetMapping("/vacation-history/{employeeId}")
+    public ResponseEntity<?> getVacationHistory(@PathVariable Long employeeId) {
+        try {
+            List<Absence> vacations = absenceService.getVacationHistory(employeeId);
+            return ResponseEntity.ok(vacations);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
         }

@@ -2,7 +2,7 @@ package com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos;
 
 import java.sql.Date;
 
-public class AbsenceRequest {
+public class AbsenceRequestDto {
     private Long employeeId;
     private String absenceType;
     private Date startDate;

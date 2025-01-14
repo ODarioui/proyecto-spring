@@ -156,4 +156,31 @@ public class EmployeeServiceImpl implements EmployeeService{
         return netSalary;
     }
 
+    @Transactional
+    public int calculateAvailableVacationDays(Long employeeId) {
+        Optional<Employee> foundEmployee = employeeRepository.findById(employeeId);
+
+        if (!foundEmployee.isPresent()) {
+            throw new IllegalArgumentException("No existe el empleado con el id: " + employeeId);
+        }
+
+        int consumedDays = 0;
+        List<Absence> absences = absenceRepository.findByEmployee(foundEmployee.get());
+
+        for (Absence absence : absences) {
+            if ("Vacaciones".equalsIgnoreCase(absence.getAbsenceType()) && "Aprobada".equalsIgnoreCase(absence.getStatus())) {
+                long diffInMillis = absence.getEndDate().getTime() - absence.getStartDate().getTime();
+                consumedDays += (int) (diffInMillis / (1000 * 60 * 60 * 24)) + 1;
+            }
+        }
+
+        foundEmployee.get().setUsedVacationDays(consumedDays);
+
+        int availableDays = foundEmployee.get().getAvailableVacationDays() - consumedDays;
+
+        employeeRepository.save(foundEmployee.get());
+
+        return availableDays;
+    }
+
 }

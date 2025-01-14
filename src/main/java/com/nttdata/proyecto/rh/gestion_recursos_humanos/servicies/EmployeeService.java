@@ -22,5 +22,7 @@ public interface EmployeeService {
     public void updateStatus(Long id, String newStatus);
 
     public double getNetSalary(Long id);
+
+    public int calculateAvailableVacationDays(Long employeeId);
 }
 
