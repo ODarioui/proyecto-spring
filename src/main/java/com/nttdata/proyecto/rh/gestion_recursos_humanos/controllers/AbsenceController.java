@@ -13,6 +13,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -35,6 +36,7 @@ public class AbsenceController {
         }
     }
 
+    @Secured({ "ROLE_HR", "ROLE_ADMIN" })
     @PostMapping("/approve-absence/{absenceId}")
     public ResponseEntity<String> approveAbsence(@PathVariable Long absenceId) {
         try {
@@ -46,6 +48,7 @@ public class AbsenceController {
         
     }
 
+    @Secured({ "ROLE_HR", "ROLE_ADMIN" })
     @PostMapping("/reject-absence/{absenceId}")
     public ResponseEntity<String> rejectAbsence(@PathVariable Long absenceId) {
         try {

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro de empleado</title>
+</head>
+<body>
+    <h1>Register New Employee</h1>
+    <form id="employeeForm">
+        <label for="userId">ID usuario:</label>
+        <input type="number" id="userId" name="userId" required>
+        <br>
+
+        <label for="departmentId">ID departamento:</label>
+        <input type="number" id="departmentId" name="departmentId" required>
+        <br>
+
+        <label for="position">Posicion:</label>
+        <input type="text" id="position" name="position" required>
+        <br>
+
+        <label for="hireDate">Fecha de contratación:</label>
+        <input type="date" id="hireDate" name="hireDate" required>
+        <br>
+
+        <label for="salary">Salario:</label>
+        <input type="number" step="0.01" id="salary" name="salary" required>
+        <br>
+
+        <label for="deductions">Deducciones:</label>
+        <input type="number" id="deductions" name="deductions" required>
+        <br>
+
+        <label for="bonuses">Bonuses:</label>
+        <input type="number" id="bonuses" name="bonuses" required>
+        <br>
+
+        <label for="birthDate">Fecha de nacimiento:</label>
+        <input type="date" id="birthDate" name="birthDate" required>
+        <br>
+
+        <label for="status">Estado:</label>
+        <input type="text" id="status" name="status" required>
+        <br>
+
+        <button type="button" onclick="submitForm()">Register</button>
+    </form>
+
+    <script>
+        async function submitForm() {
+            const form = document.getElementById('employeeForm');
+            const formData = new FormData(form);
+
+            const data = {
+                userId: formData.get('userId'),
+                departmentId: formData.get('departmentId'),
+                position: formData.get('position'),
+                hireDate: formData.get('hireDate'),
+                salary: parseFloat(formData.get('salary')),
+                deductions: parseFloat(formData.get('deductions')),
+                bonuses: parseFloat(formData.get('bonuses')),
+                birthDate: formData.get('birthDate'),
+                status: formData.get('status')
+            };
+
+            try {
+                const response = await fetch('/api/employees/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (response.ok) {
+                    alert('Empleado registrado correctamente');
+                } else {
+                    const error = await response.text();
+                    alert('Error: ' + error);
+                }
+            } catch (err) {
+                console.error('Request failed', err);
+            }
+        }
+    </script>
+</body>
+</html>

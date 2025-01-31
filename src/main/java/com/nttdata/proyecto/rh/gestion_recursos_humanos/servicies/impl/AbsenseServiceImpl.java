@@ -1,5 +1,6 @@
 package com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.impl;
 
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,7 +33,7 @@ public class AbsenseServiceImpl implements AbsenceService{
         if(!employee.isPresent())
             throw new IllegalArgumentException("No existe el empleado con el id: " + employee.get().getId());
     
-        if(newAbsence.getStartDate().after(newAbsence.getEndDate()))
+        if(newAbsence.getStartDate().isAfter(newAbsence.getEndDate()))
             throw new IllegalArgumentException("La fecha de inicio debe ser anterior a la fecha de fin.");
 
         Absence absence = new Absence();
@@ -91,27 +92,23 @@ public class AbsenseServiceImpl implements AbsenceService{
         if(!employee.isPresent())
             throw new IllegalArgumentException("No existe el empleado con el id: " + employeeId);
 
-        List<Absence> history = absenceRepository.findByEmployee(employee.get());
-
-        return history;
+        return absenceRepository.findByEmployee(employee.get());
+        
     }
 
-    public int calculateDaysAbsence(Long employeeId){
-        int totalDays = 0;
-        Optional<Employee> employee = employeeRepository.findById(employeeId);
+    public int calculateDaysAbsence(Long employeeId) {
+        Employee employee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new IllegalArgumentException("No existe el empleado con el id: " + employeeId));
 
-        if(!employee.isPresent())
-            throw new IllegalArgumentException("No existe el empleado con el id: " + employeeId);
+        List<Absence> history = absenceRepository.findByEmployee(employee);
 
-        List<Absence> history = absenceRepository.findByEmployee(employee.get());
+        int totalDays = history.stream()
+                .filter(absence -> absence.getStartDate() != null && absence.getEndDate() != null)
+                .mapToInt(absence -> (int) ChronoUnit.DAYS.between(absence.getStartDate(), absence.getEndDate()) + 1)
+                .sum();
 
-        for (Absence absence : history) {
-            long difference = absence.getEndDate().getTime() - absence.getStartDate().getTime();
-            totalDays += (difference / (1000*60*60*24))%365;
-        }
-
-        employee.get().setTotalAbsenceDays(totalDays);
-        employeeRepository.save(employee.get());
+        employee.setTotalAbsenceDays(totalDays);
+        employeeRepository.save(employee);
 
         return totalDays;
     }

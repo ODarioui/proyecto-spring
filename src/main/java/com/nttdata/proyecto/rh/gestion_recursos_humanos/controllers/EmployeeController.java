@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,6 +42,7 @@ public class EmployeeController {
         }
     }
 
+    @Secured({ "ROLE_HR", "ROLE_ADMIN" })
     @GetMapping("/list")
     public ResponseEntity<?> getEmployees() {
         try {
@@ -51,6 +53,7 @@ public class EmployeeController {
         }
     }
 
+    @Secured({ "ROLE_HR", "ROLE_ADMIN" })
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteEmployee(@PathVariable Long id) {
         try {
@@ -111,6 +114,7 @@ public class EmployeeController {
         }
     }
 
+    @Secured({ "ROLE_HR", "ROLE_ADMIN" })
     @PutMapping("/calculate-absences/{employeeId}")
     public ResponseEntity<String> calculateAbsenceDays(@PathVariable Long employeeId) {
         try {

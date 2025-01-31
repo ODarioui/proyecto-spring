@@ -88,6 +88,15 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 		</plugins>
+		<pluginManagement>
+		<plugins>
+                <plugin>
+                <groupId>org.sonarsource.scanner.maven</groupId>
+                <artifactId>sonar-maven-plugin</artifactId>
+                <version>3.9.1.2184</version> <!-- Puedes probar con esta versión si la 4.0.3 no está disponible -->
+                </plugin>
+            </plugins>
+        </pluginManagement>
 	</build>
 
 </project>
