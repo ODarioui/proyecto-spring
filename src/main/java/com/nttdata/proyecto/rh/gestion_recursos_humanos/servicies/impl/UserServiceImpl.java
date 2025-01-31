@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -13,12 +15,14 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.exceptions.CustomException;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.exceptions.InsufficientPermissionsException;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.User;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.ChangePasswordDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.ChangeRoleDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.DeleteUserDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.UserDto;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.UserRegisterDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.UserStatusDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.enums.Role;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.UserRepository;
@@ -37,27 +41,32 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User registerUser(User user) {
+    public User registerUser(UserRegisterDto userR) {
 
+        userR.setPassword(passwordEncoder.encode(userR.getPassword()));
         Date creationDate = new Date();
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new IllegalArgumentException("Ya existe un usuario registrado con este email");
-        } else if (userRepository.existsByUsername(user.getUsername())) {
-            throw new IllegalArgumentException("Ya existe un usuario con este nombre de usuario");
-        } else if (user.getEmail() == null) {
-            throw new IllegalArgumentException("Email obligatorio");
-        } else if (user.getUsername() == null) {
-            throw new IllegalArgumentException("Username obligatorio");
-        }
+        User user = toUser(userR);
         user.setRole(Role.USER);
         user.setCreationDate(creationDate);
+        if (userRepository.existsByEmail(user.getEmail())) {
+            throw new CustomException("Ya existe un usuario registrado con este email");
+        } else if (userRepository.existsByUsername(user.getUsername())) {
+            throw new CustomException("Ya existe un usuario con este nombre de usuario");
+        } else if (user.getEmail() == null) {
+            throw new CustomException("Email obligatorio");
+        } else if (user.getUsername() == null) {
+            throw new CustomException("Username obligatorio");
+        }
+
         return userRepository.save(user);
     }
 
     @Override
-    public User changePassword(String username, ChangePasswordDto changePasswordDto)
+    public User changePassword(ChangePasswordDto changePasswordDto)
             throws UsernameNotFoundException {
 
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         User user = userRepository.findByUsername(username).orElseThrow();
 
         if (passwordEncoder.matches(changePasswordDto.getCurretnPassword(), user.getPassword())) {
@@ -148,10 +157,15 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public UserDto updateAnyUser(User user) {
-        System.out.println(user.getUsername());
 
         User userUpdate = userRepository.findByIdOrUsername(user.getId(), user.getUsername());
         if (userUpdate.getRole().getValue() > 3 && userUpdate.getRole() != null) {
+            throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
+        }
+
+        // implementacion programación funcional
+        Predicate<Role> isAdmin = r -> r.getValue() > 3 && r != null;
+        if (!isAdmin.test(userUpdate.getRole())) {
             throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -169,6 +183,11 @@ public class UserServiceImpl implements UserService {
             throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
         }
 
+        // implementacion programación funcional
+        Predicate<Role> isHR = r -> r.getValue() > 3 && r != null;
+        if (!isHR.test(userUpdate.getRole())) {
+            throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
+        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
 
@@ -183,6 +202,11 @@ public class UserServiceImpl implements UserService {
             throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
         }
 
+        // implementacion programación funcional
+        Predicate<Role> isAdmin = r -> r.getValue() > 3 && r != null;
+        if (!isAdmin.test(userUpdate.getRole())) {
+            throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
+        }
         userUpdate.setStatus(userStatusDto.getStatus());
 
         return toDto(userUpdate);
@@ -195,6 +219,11 @@ public class UserServiceImpl implements UserService {
             throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
         }
 
+        // implementacion programación funcional
+        Predicate<Role> isAdmin = r -> r.getValue() > 3 && r != null;
+        if (!isAdmin.test(userUpdate.getRole())) {
+            throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
+        }
         userUpdate.setStatus(userStatusDto.getStatus());
 
         return toDto(userUpdate);
@@ -204,7 +233,12 @@ public class UserServiceImpl implements UserService {
     public Map<String, Object> allUsers() {
 
         List<User> users = userRepository.findAll();
-        Map<String, Object> map = new HashMap<>();
+
+        Map<String, Object> map;
+
+        // implementacion programación funcional
+        map = users.stream()
+                .collect(Collectors.toMap(u -> u.getId().toString(), this::toDto));
 
         for (User user : users) {
             map.put(user.getId().toString(), toDto(user));
@@ -216,7 +250,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public Map<String, Object> allEmployees() {
         List<User> users = userRepository.findAll();
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map;
+
+        // implementacion programación funcional
+        map = users.stream()
+                .filter(u -> u.getRole().getValue() < 3 || u.getRole() == null)
+                .collect(Collectors.toMap(u -> u.getId().toString(), this::toDto));
 
         for (User user : users) {
             if (user.getRole().getValue() < 3 || user.getRole() == null) {
@@ -238,7 +277,7 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    public static UserDto toDto(User user) {
+    private UserDto toDto(User user) {
         UserDto userDto = new UserDto();
 
         userDto.setAddress(user.getAddress());
@@ -254,6 +293,22 @@ public class UserServiceImpl implements UserService {
 
         return userDto;
 
+    }
+
+    public static User toUser(UserRegisterDto userDto) {
+        User user = new User();
+
+        user.setName(userDto.getName());
+        user.setLastname1(userDto.getLastname1());
+        user.setLastname2(userDto.getLastname2());
+        user.setEmail(userDto.getEmail());
+        user.setUsername(userDto.getUsername());
+        user.setPassword(userDto.getPassword());
+        user.setPhone(userDto.getPhone());
+        user.setAddress(userDto.getAddress());
+        user.setStatus(userDto.getStatus());
+
+        return user;
     }
 
 }

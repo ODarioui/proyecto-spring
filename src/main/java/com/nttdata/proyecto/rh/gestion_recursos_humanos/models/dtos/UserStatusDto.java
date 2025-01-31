@@ -12,6 +12,9 @@ public class UserStatusDto {
         this.username = username;
     }
 
+    public UserStatusDto() {
+    }
+
     public String getStatus() {
         return this.status;
     }

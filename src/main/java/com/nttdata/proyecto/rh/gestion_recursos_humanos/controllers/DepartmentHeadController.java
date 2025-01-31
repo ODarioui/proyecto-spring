@@ -32,16 +32,15 @@ public class DepartmentHeadController {
             DepartmentHead departmentHead = departmentHeadService.registerDepartmentHead(departmentId, employeeId);
             return ResponseEntity.ok(departmentHead);
         } catch (IllegalArgumentException e) {
-            System.out.println("Error: " + e.getMessage());
             return ResponseEntity.badRequest().body(null);
         }
     }
 
     @GetMapping("/get-department-head/{departmentId}")
-    public ResponseEntity<DepartmentHead> getDepartmentHead(@PathVariable Long departmentId) {
+    public ResponseEntity<Optional<DepartmentHead>> getDepartmentHead(@PathVariable Long departmentId) {
         try {
             Optional<DepartmentHead> departmentHead = departmentHeadRepository.findByDepartmentId(departmentId);
-            return ResponseEntity.ok(departmentHead.get());
+            return ResponseEntity.ok().body(departmentHead);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
         }
@@ -49,7 +48,7 @@ public class DepartmentHeadController {
     }
 
     @PostMapping("/set-department-head/{id}")
-    public ResponseEntity<?> setDepartmentHead(@PathVariable Long id, @RequestParam Long employeeId,
+    public ResponseEntity<String> setDepartmentHead(@PathVariable Long id, @RequestParam Long employeeId,
             @RequestParam Long departmentId) {
         try {
             departmentHeadService.setDepartmentHead(id, departmentId, employeeId);

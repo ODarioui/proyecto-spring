@@ -78,8 +78,6 @@ public class DepartmentController {
 
         ResponseDto responseDto = new ResponseDto();
 
-        System.out.println(departmentHead.getDepartment().getId());
-        System.out.println(departmentHead.getEmployee().getId());
         departmentService.addHeadToDepartment(departmentHead);
 
         responseDto.setDate(new Date());
@@ -91,20 +89,20 @@ public class DepartmentController {
     }
 
     @GetMapping("/department-employees/{department_id}")
-    public ResponseEntity<ResponseDto> listEmployeesDepartment(@PathVariable Long department_id) {
+    public ResponseEntity<ResponseDto> listEmployeesDepartment(@PathVariable Long departmentId) {
 
         ResponseDto responseDto = new ResponseDto();
 
         responseDto.setDate(new Date());
-        responseDto.setMessage("Empleados del departamento con id " + department_id.toString());
+        responseDto.setMessage("Empleados del departamento con id " + departmentId.toString());
         responseDto.setStatus(HttpStatus.OK.value());
-        responseDto.setObject(departmentService.getEmployeesByDepartment(department_id));
+        responseDto.setObject(departmentService.getEmployeesByDepartment(departmentId));
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @PutMapping("/give-project")
-    public ResponseEntity<ResponseDto> putMethodName(@RequestBody ProjectToDepartment projectToDepartment) {
+    public ResponseEntity<ResponseDto> giveProject(@RequestBody ProjectToDepartment projectToDepartment) {
         ResponseDto responseDto = new ResponseDto();
 
         responseDto.setDate(new Date());
