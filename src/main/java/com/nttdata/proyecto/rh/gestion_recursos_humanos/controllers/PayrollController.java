@@ -61,7 +61,7 @@ public class PayrollController {
         ResponseDto responseDto = new ResponseDto();
         responseDto.setObject(payrollService.getPayrolls(filterPayrollDto));
         responseDto.setDate(new Date());
-        responseDto.setMessage("List of payrolls");
+        responseDto.setMessage("Lista de nominas");
         responseDto.setStatus(HttpStatus.OK.value());
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
@@ -70,9 +70,9 @@ public class PayrollController {
     public ResponseEntity<ResponseDto> getPayrollsEmployee(@RequestBody FilterPayrollDto filterPayrollDto) {
 
         ResponseDto responseDto = new ResponseDto();
-        responseDto.setObject(payrollService.getPayrolls(filterPayrollDto));
+        responseDto.setObject(payrollService.getPayrollsEmployee(filterPayrollDto));
         responseDto.setDate(new Date());
-        responseDto.setMessage("List of payrolls");
+        responseDto.setMessage("Lista de nominas");
         responseDto.setStatus(HttpStatus.OK.value());
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
@@ -84,19 +84,19 @@ public class PayrollController {
         ResponseDto responseDto = new ResponseDto();
         responseDto.setObject(payrollService.getReport(filterPayrollDto));
         responseDto.setDate(new Date());
-        responseDto.setMessage("List of payrolls");
+        responseDto.setMessage("Lista de nominas");
         responseDto.setStatus(HttpStatus.OK.value());
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 
     @PutMapping("/payment-cycle")
-    public ResponseEntity<ResponseDto> putMethodName(@RequestBody Payroll payroll) {
+    public ResponseEntity<ResponseDto> paymentCycle(@RequestBody Payroll payroll) {
 
         ResponseDto responseDto = new ResponseDto();
         responseDto.setObject(payrollService.setPaymentCycle(payroll));
         responseDto.setDate(new Date());
-        responseDto.setMessage("List of payrolls");
+        responseDto.setMessage("Lista de nominas");
         responseDto.setStatus(HttpStatus.OK.value());
-        return new ResponseEntity<>(responseDto, HttpStatus.ACCEPTED);
+        return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
 }

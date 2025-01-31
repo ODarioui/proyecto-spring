@@ -8,13 +8,14 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.ChangePasswo
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.ChangeRoleDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.DeleteUserDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.UserDto;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.UserRegisterDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.UserStatusDto;
 
 public interface UserService {
 
-    public User registerUser(User user);
+    public User registerUser(UserRegisterDto userR);
 
-    public User changePassword(String username, ChangePasswordDto changePasswordDto);
+    public User changePassword(ChangePasswordDto changePasswordDto);
 
     public UserDto changeRole(ChangeRoleDto changeRoleDto);
 

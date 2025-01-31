@@ -85,17 +85,17 @@ public class DepartmentServiceImpl implements DepartmentService {
     }
 
     @Override
-    public Map<String, Object> getEmployeesByDepartment(Long department_id) {
+    public Map<String, Object> getEmployeesByDepartment(Long departmentId) {
         Optional<Department> department = null;
         Map<String, Object> map = new HashMap<>();
         List<Employee> employees = null;
         try {
 
-            department = departmentRepository.findById(department_id);
+            department = departmentRepository.findById(departmentId);
             if (department.isEmpty()) {
-                throw new DepartmentException("El departamento con id " + department_id.toString() + " no existe");
+                throw new DepartmentException("El departamento con id " + departmentId.toString() + " no existe");
             }
-            employees = employeeRepository.findByDepartmentId(department_id);
+            employees = employeeRepository.findByDepartmentId(departmentId);
 
             map.put("department", department);
             map.put("employees", employees);

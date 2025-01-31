@@ -8,6 +8,7 @@ public enum Role {
 
     private final int value;
 
+    // Constructor que inicializa ambos valores
     Role(int value) {
         this.value = value;
     }
@@ -15,4 +16,5 @@ public enum Role {
     public int getValue() {
         return value;
     }
+
 }

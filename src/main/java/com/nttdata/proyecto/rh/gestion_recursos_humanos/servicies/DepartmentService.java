@@ -16,7 +16,7 @@ public interface DepartmentService {
 
     public DepartmentHead addHeadToDepartment(DepartmentHead departmentHead);
 
-    public Map<String, Object> getEmployeesByDepartment(Long department_id);
+    public Map<String, Object> getEmployeesByDepartment(Long departmentId);
 
     public ProjectToDepartment addProjectToDepartment(ProjectToDepartment projectToDepartment);
 }
