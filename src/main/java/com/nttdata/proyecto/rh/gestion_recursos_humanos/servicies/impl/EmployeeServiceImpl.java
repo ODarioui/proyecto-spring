@@ -1,5 +1,7 @@
 package com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.impl;
 
+import java.time.ZoneId;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,6 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.EmployeeService;
+
+import jakarta.persistence.EntityNotFoundException;
+
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.AbsenceRepository;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.DepartmentHeadRepository;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.DepartmentRepository;
@@ -19,7 +24,7 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Employee;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.EmployeeDto;
 
 @Service
-public class EmployeeServiceImpl implements EmployeeService {
+public class EmployeeServiceImpl implements EmployeeService{
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -36,20 +41,20 @@ public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
     private AbsenceRepository absenceRepository;
 
+    private String exceptionEmployeeNotFoundMessage = "Employee not found";
+    
     @Transactional
-    public Employee registerEmployee(EmployeeDto request) {
+    public Employee registerEmployee(EmployeeDto request){
+        
+        Optional.ofNullable(request.getUserId())
+                .orElseThrow( () -> new IllegalArgumentException(exceptionEmployeeNotFoundMessage));
 
-        if (request.getUserId() == null) {
-            throw new IllegalArgumentException("Usuario no encontrado");
-        }
-
-        if (request.getDepartmentId() == null) {
-            throw new IllegalArgumentException("Departamento no encontrado");
-        }
+        Optional.ofNullable(request.getDepartmentId())
+                .orElseThrow( () -> new IllegalArgumentException("Departamento no encontrado"));
 
         Employee employee = new Employee();
 
-        employee.setUser(userRepository.findById(request.getUserId()).get());
+        employee.setUser(userRepository.findById(request.getUserId()).orElseThrow( () -> new EntityNotFoundException("Usuario no encontrado")));
         employee.setDepartmentId(request.getDepartmentId());
         employee.setPosition(request.getPosition());
         employee.setHireDate(request.getHireDate());
@@ -63,125 +68,102 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Transactional
-    public List<Employee> getEmployees() {
-        List<Employee> listEmployees = employeeRepository.findAll();
+    public List<Employee> getEmployees(){
 
-        if (listEmployees.isEmpty())
-            throw new IllegalArgumentException("No hay empleados registrados");
-
-        return listEmployees;
+        return Optional.of(employeeRepository.findAll())
+                        .filter(list -> !list.isEmpty())
+                        .orElseThrow( () -> new IllegalArgumentException("No hay empleados registrados"));
     }
 
     @Transactional
-    public Employee updateEmployee(Long id, Employee newEmployee) {
-        Optional<Employee> oldEmployee = employeeRepository.findById(id);
-
-        if (!oldEmployee.isPresent())
-            throw new IllegalArgumentException("No existe el empleado con el id: " + id);
-
-        oldEmployee.get().setBirthDate(newEmployee.getBirthDate());
-        oldEmployee.get().setHireDate(newEmployee.getHireDate());
-        oldEmployee.get().setPosition(newEmployee.getPosition());
-        oldEmployee.get().setSalary(newEmployee.getSalary());
-        oldEmployee.get().setStatus(newEmployee.getStatus());
-        oldEmployee.get().setDepartmentId(newEmployee.getDepartmentId());
-
-        return employeeRepository.save(oldEmployee.get());
+    public Employee updateEmployee(Long id, Employee newEmployee){  
+        return employeeRepository.findById(id)
+            .map(oldEmployee -> {
+                oldEmployee.setBirthDate(newEmployee.getBirthDate());
+                oldEmployee.setHireDate(newEmployee.getHireDate());
+                oldEmployee.setPosition(newEmployee.getPosition());
+                oldEmployee.setSalary(newEmployee.getSalary());
+                oldEmployee.setStatus(newEmployee.getStatus());
+                oldEmployee.setDepartmentId(newEmployee.getDepartmentId());
+                return employeeRepository.save(oldEmployee);
+                }
+            )
+            .orElseThrow( () -> new IllegalArgumentException(exceptionEmployeeNotFoundMessage));
     }
 
     @Transactional
-    public void deleteEmployee(Long id) {
-        Optional<Employee> oldEmployee = employeeRepository.findById(id);
+    public void deleteEmployee(Long id){
 
-        if (!oldEmployee.isPresent())
-            throw new IllegalArgumentException("No existe el empleado con el id: " + id);
+        employeeRepository.findById(id)
+                          .ifPresentOrElse(employee -> {
+                                        departmentHeadRepository.findByEmployee(employee).forEach(department -> {
+                                            department.setEmployee(null);
+                                            departmentHeadRepository.save(department);
+                                        });
 
-        List<DepartmentHead> departments = departmentHeadRepository.findByEmployee(oldEmployee.get());
-        for (DepartmentHead department : departments) {
-            department.setEmployee(null);
-            departmentHeadRepository.save(department);
-        }
+                                        absenceRepository.deleteAll(absenceRepository.findByEmployee(employee));
+                                        employeeRepository.deleteById(id);
+                                        }, () -> {
+                                            throw new IllegalArgumentException(exceptionEmployeeNotFoundMessage);
+                                        }
+                                    );
+}
 
-        List<Absence> absences = absenceRepository.findByEmployee(oldEmployee.get());
-        absenceRepository.deleteAll(absences);
-
-        employeeRepository.deleteById(id);
+    @Transactional
+    public Employee getEmployee(Long id){
+        return employeeRepository.findById(id)
+                                .orElseThrow(() -> new IllegalArgumentException(exceptionEmployeeNotFoundMessage));
     }
 
     @Transactional
-    public Employee getEmployee(Long id) {
-        Optional<Employee> foundEmployee = employeeRepository.findById(id);
+    public void updateDepartmentPos(Long id, Long newDepartmentId, String newPosition){
+        Employee foundEmployee = employeeRepository.findById(id)
+                                .orElseThrow(() -> new IllegalArgumentException(exceptionEmployeeNotFoundMessage));
 
-        if (!foundEmployee.isPresent())
-            throw new IllegalArgumentException("No existe el empleado con el id: " + id);
+        departmentRepository.findById(newDepartmentId)
+                            .orElseThrow(() -> new IllegalArgumentException("No existe el departamento con el id: " + newDepartmentId));
 
-        return foundEmployee.get();
-    }
+        foundEmployee.setPosition(newPosition);
+        foundEmployee.setDepartmentId(newDepartmentId);
 
-    @Transactional
-    public void updateDepartmentPos(Long id, Long newDepartmentId, String newPosition) {
-        Optional<Employee> foundEmployee = employeeRepository.findById(id);
-        Optional<Department> newDepartment = departmentRepository.findById(newDepartmentId);
-
-        if (!foundEmployee.isPresent())
-            throw new IllegalArgumentException("No existe el empleado con el id: " + id);
-        if (!newDepartment.isPresent())
-            throw new IllegalArgumentException("No existe el empleado con el id: " + id);
-
-        foundEmployee.get().setPosition(newPosition);
-        foundEmployee.get().setDepartmentId(newDepartmentId);
+        employeeRepository.save(foundEmployee);
 
     }
 
     @Transactional
-    public void updateStatus(Long id, String newStatus) {
-        Optional<Employee> foundEmployee = employeeRepository.findById(id);
+    public void updateStatus(Long id, String newStatus){
+        Employee foundEmployee = employeeRepository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException(exceptionEmployeeNotFoundMessage));
 
-        if (!foundEmployee.isPresent())
-            throw new IllegalArgumentException("No existe el empleado con el id: " + id);
+        foundEmployee.setStatus(newStatus);
 
-        foundEmployee.get().setStatus(newStatus);
+        employeeRepository.save(foundEmployee);
     }
 
     @Transactional
-    public double getNetSalary(Long id) {
-        Optional<Employee> foundEmployee = employeeRepository.findById(id);
-
-        if (!foundEmployee.isPresent())
-            throw new IllegalArgumentException("No existe el empleado con el id: " + id);
-
-        double netSalary = foundEmployee.get().getSalary() + foundEmployee.get().getBonuses()
-                - foundEmployee.get().getDeductions();
-
-        return netSalary;
+    public double getNetSalary(Long id){
+        return employeeRepository.findById(id)
+                                .map(employee -> employee.getSalary() + employee.getBonuses() - employee.getDeductions())
+                                .orElseThrow( () -> new IllegalArgumentException(exceptionEmployeeNotFoundMessage));
     }
 
     @Transactional
     public int calculateAvailableVacationDays(Long employeeId) {
-        Optional<Employee> foundEmployee = employeeRepository.findById(employeeId);
-
-        if (!foundEmployee.isPresent()) {
-            throw new IllegalArgumentException("No existe el empleado con el id: " + employeeId);
-        }
-
-        int consumedDays = 0;
-        List<Absence> absences = absenceRepository.findByEmployee(foundEmployee.get());
-
-        for (Absence absence : absences) {
-            if ("Vacaciones".equalsIgnoreCase(absence.getAbsenceType())
-                    && "Aprobada".equalsIgnoreCase(absence.getStatus())) {
-                long diffInMillis = absence.getEndDate().getTime() - absence.getStartDate().getTime();
-                consumedDays += (int) (diffInMillis / (1000 * 60 * 60 * 24)) + 1;
-            }
-        }
-
-        foundEmployee.get().setUsedVacationDays(consumedDays);
-
-        int availableDays = foundEmployee.get().getAvailableVacationDays() - consumedDays;
-
-        employeeRepository.save(foundEmployee.get());
-
+        Employee foundEmployee = employeeRepository.findById(employeeId)
+                .orElseThrow(() -> new IllegalArgumentException(exceptionEmployeeNotFoundMessage));
+    
+        int consumedDays = absenceRepository.findByEmployee(foundEmployee).stream()
+                .filter(absence -> "Vacaciones".equalsIgnoreCase(absence.getAbsenceType()) && "Aprobada".equalsIgnoreCase(absence.getStatus()))
+                .filter(absence -> absence.getStartDate() != null && absence.getEndDate() != null)
+                .mapToInt(absence -> (int) ChronoUnit.DAYS.between(absence.getStartDate(), absence.getEndDate()) + 1)
+                .sum();
+    
+        foundEmployee.setUsedVacationDays(consumedDays);
+        int availableDays = foundEmployee.getAvailableVacationDays() - consumedDays;
+        employeeRepository.save(foundEmployee);
+    
         return availableDays;
     }
+
 
 }

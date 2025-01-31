@@ -1,6 +1,8 @@
 package com.nttdata.proyecto.rh.gestion_recursos_humanos.models;
 
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -15,8 +17,8 @@ public class Absence {
     private Employee employee;
 
     private String absenceType;
-    private Date startDate;
-    private Date endDate;
+    private LocalDate startDate;
+    private LocalDate endDate;   
     private String status;
 
     // Getters and Setters
@@ -44,19 +46,19 @@ public class Absence {
         this.absenceType = absenceType;
     }
 
-    public Date getStartDate() {
+    public LocalDate getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(Date startDate) {
+    public void setStartDate(LocalDate startDate) {
         this.startDate = startDate;
     }
 
-    public Date getEndDate() {
+    public LocalDate getEndDate() {
         return endDate;
     }
 
-    public void setEndDate(Date endDate) {
+    public void setEndDate(LocalDate endDate) {
         this.endDate = endDate;
     }
 
