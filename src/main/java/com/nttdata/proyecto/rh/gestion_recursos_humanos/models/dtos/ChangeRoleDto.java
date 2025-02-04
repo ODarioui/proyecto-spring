@@ -13,6 +13,15 @@ public class ChangeRoleDto {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    public ChangeRoleDto(Long id, String username, Role role) {
+        this.id = id;
+        this.username = username;
+        this.role = role;
+    }
+
+    public ChangeRoleDto() {
+    }
+
     public Long getId() {
         return this.id;
     }

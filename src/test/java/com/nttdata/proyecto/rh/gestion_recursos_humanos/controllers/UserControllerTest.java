@@ -13,8 +13,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -32,7 +33,7 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.UserDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.UserStatusDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.UserService;
 
-public class UserControllerTest {
+class UserControllerTest {
 
     private final ChangePasswordDto changePasswordDto = new ChangePasswordDto();
     private final String newPassword = "1234";
@@ -47,8 +48,14 @@ public class UserControllerTest {
     @InjectMocks
     private UserController userController;
 
-    @Before
-    public void setUp() {
+    @BeforeAll
+    static void setUp() {
+        MockitoAnnotations.openMocks(UserControllerTest.class);
+
+    }
+
+    @BeforeEach
+    void init() {
         MockitoAnnotations.openMocks(this);
         changePasswordDto.setCurretnPassword(currentPasswoed);
         changePasswordDto.setNewPassword(newPassword);
@@ -56,7 +63,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void changePasswordTest() {
+    void changePasswordTest() {
         Mockito.when(userService.changePassword(changePasswordDto)).thenReturn(user);
         ResponseEntity<Map<String, Object>> response = userController.changePassword(changePasswordDto);
         assertNotNull(response);
@@ -66,7 +73,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void ErrorchangePasswordTest() {
+    void ErrorchangePasswordTest() {
         Mockito.when(userService.changePassword(changePasswordDto)).thenReturn(null);
         ResponseEntity<Map<String, Object>> response = userController.changePassword(changePasswordDto);
         assertNotNull(response);
@@ -76,7 +83,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void changeRolTest() {
+    void changeRolTest() {
         ChangeRoleDto changeRoleDto = new ChangeRoleDto();
         Mockito.when(userService.changeRole(changeRoleDto)).thenReturn(userDto);
         ResponseEntity<ResponseDto> response = userController.changeRole(changeRoleDto);
@@ -89,7 +96,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void ErrorchangeRolTest() {
+    void ErrorchangeRolTest() {
         ChangeRoleDto changeRoleDto = new ChangeRoleDto();
         Mockito.when(userService.changeRole(changeRoleDto)).thenThrow();
         ResponseEntity<ResponseDto> response = userController.changeRole(changeRoleDto);
@@ -101,7 +108,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void deleteUsersTest() {
+    void deleteUsersTest() {
         List<DeleteUserDto> listToDelete = new ArrayList<>();
         Mockito.when(userService.deleteUsers(listToDelete)).thenReturn(mapOfObjects);
         ResponseEntity<ResponseDto> response = userController.deleteUser(listToDelete);
@@ -114,7 +121,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void ErrorDeleteUsersTest() {
+    void ErrorDeleteUsersTest() {
         List<DeleteUserDto> listToDelete = new ArrayList<>();
         Mockito.when(userService.deleteUsers(listToDelete)).thenThrow();
         ResponseEntity<ResponseDto> response = userController.deleteUser(listToDelete);
@@ -126,7 +133,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void selfDeleteTest() {
+    void selfDeleteTest() {
         doNothing().when(userService).selfDelete();
         ResponseEntity<ResponseDto> response = userController.selfDelete();
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -137,7 +144,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void ErrorSelfDeleteTest() {
+    void ErrorSelfDeleteTest() {
         doThrow(new CustomException("No se pudo eliminar el usuario")).when(userService).selfDelete();
         ResponseEntity<ResponseDto> response = userController.selfDelete();
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -147,19 +154,19 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void updateAnyUserTest() {
+    void updateAnyUserTest() {
         Mockito.when(userService.updateAnyUser(user)).thenReturn(userDto);
         ResponseEntity<ResponseDto> response = userController.updateAnyUser(user);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("Usuario actualizado", response.getBody().getMessage());
+        assertEquals("Usuario actualizado por admin", response.getBody().getMessage());
         assertTrue(response.getBody().getDate() instanceof Date);
         assertNotNull(response.getBody().getObject());
     }
 
     @SuppressWarnings("null")
     @Test
-    public void ErrorupdateAnyUserTest() {
+    void ErrorupdateAnyUserTest() {
         Mockito.when(userService.updateAnyUser(user)).thenThrow();
         ResponseEntity<ResponseDto> response = userController.updateAnyUser(user);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -170,19 +177,19 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void updateEmployeeTest() {
+    void updateEmployeeTest() {
         Mockito.when(userService.updateEmployee(user)).thenReturn(userDto);
         ResponseEntity<ResponseDto> response = userController.updateEmployee(user);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("Usuario actualizado", response.getBody().getMessage());
+        assertEquals("Usuario actualizado por HR", response.getBody().getMessage());
         assertTrue(response.getBody().getDate() instanceof Date);
         assertNotNull(response.getBody().getObject());
     }
 
     @SuppressWarnings("null")
     @Test
-    public void ErrorupdateEmployeeTest() {
+    void ErrorupdateEmployeeTest() {
         Mockito.when(userService.updateEmployee(user)).thenThrow();
         ResponseEntity<ResponseDto> response = userController.updateEmployee(user);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -193,7 +200,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void userStatusTest() {
+    void userStatusTest() {
         UserStatusDto userStatusDto = new UserStatusDto();
         Mockito.when(userService.statusUser(userStatusDto)).thenReturn(userDto);
         ResponseEntity<ResponseDto> response = userController.userStatus(userStatusDto);
@@ -206,7 +213,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void ErrorUserStatusTest() {
+    void ErrorUserStatusTest() {
         UserStatusDto userStatusDto = new UserStatusDto();
         Mockito.when(userService.statusUser(userStatusDto)).thenThrow();
         ResponseEntity<ResponseDto> response = userController.userStatus(userStatusDto);
@@ -218,7 +225,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void employeeStatusTest() {
+    void employeeStatusTest() {
         UserStatusDto userStatusDto = new UserStatusDto();
         Mockito.when(userService.statusEmployee(userStatusDto)).thenReturn(userDto);
         ResponseEntity<ResponseDto> response = userController.employeeStatus(userStatusDto);
@@ -231,7 +238,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void ErrorEmployeeStatusTest() {
+    void ErrorEmployeeStatusTest() {
         UserStatusDto userStatusDto = new UserStatusDto();
         Mockito.when(userService.statusEmployee(userStatusDto)).thenThrow();
         ResponseEntity<ResponseDto> response = userController.employeeStatus(userStatusDto);
@@ -243,7 +250,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void getAllUsersTest() {
+    void getAllUsersTest() {
         Mockito.when(userService.allUsers()).thenReturn(new HashMap<>());
         ResponseEntity<ResponseDto> response = userController.getAllUsers();
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -255,7 +262,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void ErrorgetAllUsersTest() {
+    void ErrorgetAllUsersTest() {
         Mockito.when(userService.allUsers()).thenThrow();
         ResponseEntity<ResponseDto> response = userController.getAllUsers();
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -266,7 +273,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void getEmployeeTest() {
+    void getEmployeeTest() {
         Mockito.when(userService.allEmployees()).thenReturn(new HashMap<>());
         ResponseEntity<ResponseDto> response = userController.getEmployee();
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -278,7 +285,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void ErrorgetEmployeeTest() {
+    void ErrorgetEmployeeTest() {
         Mockito.when(userService.allEmployees()).thenThrow();
         ResponseEntity<ResponseDto> response = userController.getEmployee();
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -289,7 +296,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void getInfoTest() {
+    void getInfoTest() {
         Mockito.when(userService.userInfo()).thenReturn(userDto);
         ResponseEntity<ResponseDto> response = userController.getInfo();
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -301,7 +308,7 @@ public class UserControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void ErrorGetInfoTest() {
+    void ErrorGetInfoTest() {
         Mockito.when(userService.userInfo()).thenThrow();
         ResponseEntity<ResponseDto> response = userController.getInfo();
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());

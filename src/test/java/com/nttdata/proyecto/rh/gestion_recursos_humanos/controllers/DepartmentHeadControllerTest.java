@@ -8,8 +8,8 @@ import static org.mockito.Mockito.doThrow;
 
 import java.util.Optional;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -23,7 +23,7 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.DepartmentH
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.DepartmentHeadService;
 
 @SpringBootTest
-public class DepartmentHeadControllerTest {
+class DepartmentHeadControllerTest {
 
     private final Long departmentId = 1L;
     private final Long employeeId = 6381L;
@@ -40,22 +40,25 @@ public class DepartmentHeadControllerTest {
     @Mock
     private DepartmentHeadRepository departmentRepository;
 
-    @Before
-    public void init() {
-        MockitoAnnotations.openMocks(this);
+    @BeforeAll
+    static void init() {
+        MockitoAnnotations.openMocks(DepartmentHeadControllerTest.class);
     }
 
     @Test
-    public void registerDepartmentHeadTest() {
+    void registerDepartmentHeadTest() {
         Mockito.when(departmentHeadService.registerDepartmentHead(departmentId, employeeId)).thenReturn(departmentHead);
+        System.out.println(departmentHead);
         ResponseEntity<DepartmentHead> response = departmentHeadController.registerDepartmentHead(departmentId,
                 employeeId);
+
         assertEquals(HttpStatus.OK, response.getStatusCode());
+        System.out.println(response.getBody());
         assertNotNull(response.getBody());
     }
 
     @Test
-    public void ErrorRegisterDepartmentHeadTest() {
+    void ErrorRegisterDepartmentHeadTest() {
         Mockito.when(departmentHeadService.registerDepartmentHead(departmentId, employeeId))
                 .thenThrow(IllegalArgumentException.class);
         ResponseEntity<DepartmentHead> response = departmentHeadController.registerDepartmentHead(departmentId,
@@ -65,7 +68,7 @@ public class DepartmentHeadControllerTest {
     }
 
     @Test
-    public void getDepartmentHeadTest() {
+    void getDepartmentHeadTest() {
         Mockito.when(departmentRepository.findByDepartmentId(departmentId)).thenReturn(departmentHeadOptional);
         ResponseEntity<Optional<DepartmentHead>> response = departmentHeadController.getDepartmentHead(departmentId);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -73,7 +76,7 @@ public class DepartmentHeadControllerTest {
     }
 
     @Test
-    public void ErrorgetDepartmentHeadTest() {
+    void ErrorgetDepartmentHeadTest() {
         Mockito.when(departmentRepository.findByDepartmentId(departmentId)).thenThrow(new IllegalArgumentException());
         ResponseEntity<Optional<DepartmentHead>> response = departmentHeadController.getDepartmentHead(departmentId);
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
@@ -81,7 +84,7 @@ public class DepartmentHeadControllerTest {
     }
 
     @Test
-    public void setDepartmentHeadTest() {
+    void setDepartmentHeadTest() {
         doNothing().when(departmentHeadService).setDepartmentHead(id, departmentId, employeeId);
         ResponseEntity<String> response = departmentHeadController.setDepartmentHead(id, employeeId,
                 departmentId);
@@ -91,7 +94,7 @@ public class DepartmentHeadControllerTest {
     }
 
     @Test
-    public void ErrorsetDepartmentHeadTest() {
+    void ErrorsetDepartmentHeadTest() {
         doThrow(IllegalArgumentException.class).when(departmentHeadService).setDepartmentHead(id, departmentId,
                 employeeId);
         ResponseEntity<String> response = departmentHeadController.setDepartmentHead(id, employeeId,

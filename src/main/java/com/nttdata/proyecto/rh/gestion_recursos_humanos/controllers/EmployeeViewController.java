@@ -2,7 +2,6 @@ package com.nttdata.proyecto.rh.gestion_recursos_humanos.controllers;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,14 +13,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Employee;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.EmployeeDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.EmployeeService;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @Controller
 @RequestMapping("/api/v1/employees")
 public class EmployeeViewController {
-    @Autowired
-    private EmployeeService employeeService;
+
+    private final EmployeeService employeeService;
+
+    EmployeeViewController(EmployeeService employeeService) {
+        this.employeeService = employeeService;
+    }
 
     @Secured({ "ROLE_HR", "ROLE_ADMIN" })
     @GetMapping("/list")
@@ -29,7 +30,7 @@ public class EmployeeViewController {
         List<Employee> employees = employeeService.getEmployees();
         model.addAttribute("employees", employees);
         return "employees-list";
-    } 
+    }
 
     @GetMapping("/new")
     public String newEmployee(Model model) {
@@ -42,5 +43,5 @@ public class EmployeeViewController {
         employeeService.registerEmployee(employee);
         return "redirect:/api/v1/employees";
     }
-    
+
 }

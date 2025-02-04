@@ -12,7 +12,7 @@ public class FilterPayrollDto {
     private String name;
     private String lastname1;
     private String lastname2;
-    private Long employee_id;
+    private Long employeeId;
     private Month month;
     private Year year;
     private Date paymentDate;
@@ -27,6 +27,11 @@ public class FilterPayrollDto {
     private Double maxnNtSalary;
 
     public FilterPayrollDto() {
+    }
+
+    public FilterPayrollDto(String username, Long employeeId) {
+        this.username = username;
+        this.employeeId = employeeId;
     }
 
     public String getUsername() {
@@ -61,12 +66,12 @@ public class FilterPayrollDto {
         this.lastname2 = lastname2;
     }
 
-    public Long getEmployee_id() {
-        return this.employee_id;
+    public Long getEmployeeId() {
+        return this.employeeId;
     }
 
-    public void setEmployee_id(Long employee_id) {
-        this.employee_id = employee_id;
+    public void setemployeeId(Long employeeId) {
+        this.employeeId = employeeId;
     }
 
     public Month getMonth() {

@@ -2,7 +2,6 @@ package com.nttdata.proyecto.rh.gestion_recursos_humanos.controllers;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -15,41 +14,44 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.exceptions.CustomException;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Employee;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.EmployeeDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.AbsenceService;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.EmployeeService;
 import org.springframework.web.bind.annotation.PutMapping;
 
-
 @RestController
 @RequestMapping("/api/employees")
 public class EmployeeController {
 
-    @Autowired
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
 
-    @Autowired
-    private AbsenceService absenceService;
+    private final AbsenceService absenceService;
+
+    EmployeeController(EmployeeService employeeService, AbsenceService absenceService) {
+        this.employeeService = employeeService;
+        this.absenceService = absenceService;
+    }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerEmployee(@RequestBody EmployeeDto request) {
+    public ResponseEntity<Employee> registerEmployee(@RequestBody EmployeeDto request) {
         try {
             Employee registeredEmployee = employeeService.registerEmployee(request);
             return new ResponseEntity<>(registeredEmployee, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            throw new CustomException(e.getMessage());
         }
     }
 
     @Secured({ "ROLE_HR", "ROLE_ADMIN" })
     @GetMapping("/list")
-    public ResponseEntity<?> getEmployees() {
+    public ResponseEntity<List<Employee>> getEmployees() {
         try {
             List<Employee> registeredEmployees = employeeService.getEmployees();
             return new ResponseEntity<>(registeredEmployees, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            throw new CustomException(e.getMessage());
         }
     }
 
@@ -65,12 +67,12 @@ public class EmployeeController {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<?> getEmployee(@PathVariable Long id) {
+    public ResponseEntity<Employee> getEmployee(@PathVariable Long id) {
         try {
             Employee registeredEmployee = employeeService.getEmployee(id);
             return new ResponseEntity<>(registeredEmployee, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            throw new CustomException(e.getMessage());
         }
     }
 
@@ -85,7 +87,8 @@ public class EmployeeController {
     }
 
     @PutMapping("/update-dep-pos/{id}")
-    public ResponseEntity<String> updateDepartmentPos(@PathVariable Long id, @RequestParam Long newDepartmentId, @RequestParam String newPosition) {
+    public ResponseEntity<String> updateDepartmentPos(@PathVariable Long id, @RequestParam Long newDepartmentId,
+            @RequestParam String newPosition) {
         try {
             employeeService.updateDepartmentPos(id, newDepartmentId, newPosition);
             return ResponseEntity.ok("Departamento y posiciones nuevas actualizadas con éxito.");
@@ -105,9 +108,9 @@ public class EmployeeController {
     }
 
     @GetMapping("/get-salary/{id}")
-    public ResponseEntity<?> getSalary(@PathVariable Long id) {
+    public ResponseEntity<Double> getSalary(@PathVariable Long id) {
         try {
-            double netSalary = employeeService.getNetSalary(id);
+            Double netSalary = employeeService.getNetSalary(id);
             return ResponseEntity.ok(netSalary);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(null);
@@ -124,7 +127,7 @@ public class EmployeeController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
+
     @GetMapping("/vacation-balance/{employeeId}")
     public ResponseEntity<String> getVacationBalance(@PathVariable Long employeeId) {
         try {
@@ -134,5 +137,5 @@ public class EmployeeController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
-    
+
 }

@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -21,7 +21,7 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.ResponseDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.PayrollCycleService;
 
 @SpringBootTest
-public class PayrollCycleControllerTest {
+class PayrollCycleControllerTest {
 
     private final PayrollCycle payrollCycle = new PayrollCycle();
 
@@ -31,14 +31,14 @@ public class PayrollCycleControllerTest {
     @Mock
     private PayrollCycleService payrollCycleService;
 
-    @Before
-    public void init() {
-        MockitoAnnotations.openMocks(this);
+    @BeforeAll
+    static void init() {
+        MockitoAnnotations.openMocks(PayrollCycleControllerTest.class);
     }
 
     @SuppressWarnings("null")
     @Test
-    public void addTest() {
+    void addTest() {
         Mockito.when(payrollCycleService.addPayrollCycle(payrollCycle)).thenReturn(payrollCycle);
         ResponseEntity<ResponseDto> response = payrollCycleController.add(payrollCycle);
 

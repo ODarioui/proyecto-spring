@@ -49,19 +49,13 @@ public class User implements UserDetails {
 
     private String status;
 
-    public User(Long id, String name, String lastname1, String lastname2, String email, String password, String phone,
-            String address, Role role, Date creationDate, String status) {
-        this.id = id;
-        this.name = name;
-        this.lastname1 = lastname1;
-        this.lastname2 = lastname2;
+    public User(String email, String password,
+            String username) {
+
         this.email = email;
         this.password = password;
-        this.phone = phone;
-        this.address = address;
-        this.role = role;
-        this.creationDate = creationDate;
-        this.status = status;
+
+        this.username = username;
     }
 
     public User() {

@@ -2,7 +2,6 @@ package com.nttdata.proyecto.rh.gestion_recursos_humanos.controllers;
 
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,8 +17,11 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.PayrollCycleSe
 @RequestMapping("/api/v1/payroll-cycle")
 public class PayrollCycleController {
 
-    @Autowired
-    private PayrollCycleService payrollCycleService;
+    private final PayrollCycleService payrollCycleService;
+
+    PayrollCycleController(PayrollCycleService payrollCycleService) {
+        this.payrollCycleService = payrollCycleService;
+    }
 
     @PostMapping("/add")
     public ResponseEntity<ResponseDto> add(@RequestBody PayrollCycle payrollCycle) {

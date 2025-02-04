@@ -7,10 +7,6 @@ import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,17 +23,19 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.UserStatusDt
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.enums.Role;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.repositories.UserRepository;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.UserService;
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.util.Security;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    @Autowired
     private UserRepository userRepository;
     private PasswordEncoder passwordEncoder;
+    private Security security;
 
-    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder, Security security) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.security = security;
     }
 
     @Override
@@ -65,8 +63,7 @@ public class UserServiceImpl implements UserService {
     public User changePassword(ChangePasswordDto changePasswordDto)
             throws UsernameNotFoundException {
 
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        String username = security.getUsernameLogged();
         User user = userRepository.findByUsername(username).orElseThrow();
 
         if (passwordEncoder.matches(changePasswordDto.getCurretnPassword(), user.getPassword())) {
@@ -81,11 +78,7 @@ public class UserServiceImpl implements UserService {
 
         User user = null;
         int role = 0;
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        var authority = authentication.getAuthorities()
-                .stream()
-                .map(GrantedAuthority::getAuthority)
-                .findFirst().orElse(null);
+        List<String> authority = security.userAuthority();
 
         user = userRepository.findByIdOrUsername(changeRoleDto.getId(), changeRoleDto.getUsername());
 
@@ -97,14 +90,15 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("No se ha indicado ningun rol");
         }
 
-        if (authority.contains("ROLE_ADMIN")) {
+        if (authority.contains("ROLE_USER")) {
+            role = 1;
+        } else if (authority.contains("ROLE_ADMIN")) {
             role = 4;
         } else if (authority.contains("ROLE_HR")) {
             role = 3;
-        } else if (authority.contains("ROLE_EMPLOYEE")) {
+        }
+        if (authority.contains("ROLE_EMPLOYEE")) {
             role = 2;
-        } else if (authority.contains("ROLE_USER")) {
-            role = 1;
         }
 
         if (role < 3) {
@@ -148,25 +142,25 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void selfDelete() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        String username = security.getUsernameLogged();
+        try {
+            User user = userRepository.findByUsername(username).orElseThrow();
+            userRepository.delete(user);
 
-        User user = userRepository.findByUsername(username).orElse(null);
-        userRepository.delete(user);
+        } catch (Exception e) {
+            throw new CustomException("No se pudo eliminar");
+        }
     }
 
     @Override
     public UserDto updateAnyUser(User user) {
 
         User userUpdate = userRepository.findByIdOrUsername(user.getId(), user.getUsername());
-        if (userUpdate.getRole().getValue() > 3 && userUpdate.getRole() != null) {
-            throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
-        }
 
         // implementacion programación funcional
-        Predicate<Role> isAdmin = r -> r.getValue() > 3 && r != null;
-        if (!isAdmin.test(userUpdate.getRole())) {
-            throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
+        Predicate<Role> isAdmin = r -> r == null || r.getValue() > 3;
+        if (isAdmin.test(userUpdate.getRole())) {
+            throw new InsufficientPermissionsException("No tiene permisios sobre este usuario ");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
@@ -179,14 +173,11 @@ public class UserServiceImpl implements UserService {
     public UserDto updateEmployee(User user) {
 
         User userUpdate = userRepository.findByIdOrUsername(user.getId(), user.getUsername());
-        if (userUpdate.getRole().getValue() > 2 && userUpdate.getRole() != null) {
-            throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
-        }
 
         // implementacion programación funcional
-        Predicate<Role> isHR = r -> r.getValue() > 3 && r != null;
-        if (!isHR.test(userUpdate.getRole())) {
-            throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
+        Predicate<Role> isHR = r -> r == null || r.getValue() > 2;
+        if (isHR.test(userUpdate.getRole())) {
+            throw new InsufficientPermissionsException("No tiene permisios sobre  este usuario");
         }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         userRepository.save(user);
@@ -198,16 +189,15 @@ public class UserServiceImpl implements UserService {
     public UserDto statusUser(UserStatusDto userStatusDto) {
 
         User userUpdate = userRepository.findByIdOrUsername(userStatusDto.getId(), userStatusDto.getUsername());
-        if (userUpdate.getRole().getValue() > 3 && userUpdate.getRole() != null) {
+
+        // implementacion programación funcional
+        Predicate<Role> isAdmin = r -> r == null || r.getValue() > 3;
+        if (isAdmin.test(userUpdate.getRole())) {
             throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
         }
 
-        // implementacion programación funcional
-        Predicate<Role> isAdmin = r -> r.getValue() > 3 && r != null;
-        if (!isAdmin.test(userUpdate.getRole())) {
-            throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
-        }
         userUpdate.setStatus(userStatusDto.getStatus());
+        userRepository.save(userUpdate);
 
         return toDto(userUpdate);
     }
@@ -215,16 +205,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto statusEmployee(UserStatusDto userStatusDto) {
         User userUpdate = userRepository.findByIdOrUsername(userStatusDto.getId(), userStatusDto.getUsername());
-        if (userUpdate.getRole().getValue() > 2 && userUpdate.getRole() != null) {
+
+        // implementacion programación funcional
+        Predicate<Role> isAdmin = r -> r == null || r.getValue() > 2;
+        if (isAdmin.test(userUpdate.getRole())) {
             throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
         }
 
-        // implementacion programación funcional
-        Predicate<Role> isAdmin = r -> r.getValue() > 3 && r != null;
-        if (!isAdmin.test(userUpdate.getRole())) {
-            throw new InsufficientPermissionsException("No tiene permisios sobre este usuario");
-        }
         userUpdate.setStatus(userStatusDto.getStatus());
+        userRepository.save(userUpdate);
 
         return toDto(userUpdate);
     }
@@ -240,10 +229,6 @@ public class UserServiceImpl implements UserService {
         map = users.stream()
                 .collect(Collectors.toMap(u -> u.getId().toString(), this::toDto));
 
-        for (User user : users) {
-            map.put(user.getId().toString(), toDto(user));
-        }
-
         return map;
     }
 
@@ -254,22 +239,15 @@ public class UserServiceImpl implements UserService {
 
         // implementacion programación funcional
         map = users.stream()
-                .filter(u -> u.getRole().getValue() < 3 || u.getRole() == null)
+                .filter(u -> u.getRole() == null || u.getRole().getValue() < 3)
                 .collect(Collectors.toMap(u -> u.getId().toString(), this::toDto));
-
-        for (User user : users) {
-            if (user.getRole().getValue() < 3 || user.getRole() == null) {
-                map.put(user.getId().toString(), toDto(user));
-            }
-        }
 
         return map;
     }
 
     @Override
     public UserDto userInfo() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String username = authentication.getName();
+        String username = security.getUsernameLogged();
 
         User user = userRepository.findByUsername(username).orElseThrow();
 
@@ -310,5 +288,4 @@ public class UserServiceImpl implements UserService {
 
         return user;
     }
-
 }

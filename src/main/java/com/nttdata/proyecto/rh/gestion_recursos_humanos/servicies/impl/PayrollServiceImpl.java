@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.function.BiPredicate;
 import java.util.function.ToDoubleFunction;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -32,16 +31,20 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.PayrollService
 @Service
 public class PayrollServiceImpl implements PayrollService {
 
-    private Double DEFAULT_DEDUCTION = 4.7;
+    private static final Double DEFAULTDEDUCTION = 4.7;
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    private final EmployeeRepository employeeRepository;
 
-    @Autowired
-    private PayrollRepository payrollRepository;
+    private final PayrollRepository payrollRepository;
 
-    @Autowired
-    private PayrollCycleRepository payrollCycleRepository;
+    private final PayrollCycleRepository payrollCycleRepository;
+
+    PayrollServiceImpl(EmployeeRepository employeeRepository, PayrollRepository payrollRepository,
+            PayrollCycleRepository payrollCycleRepository) {
+        this.employeeRepository = employeeRepository;
+        this.payrollRepository = payrollRepository;
+        this.payrollCycleRepository = payrollCycleRepository;
+    }
 
     @Override
     public EmployeeSalaryDto calculateSalaryEmployee(Employee employee) {
@@ -55,7 +58,7 @@ public class PayrollServiceImpl implements PayrollService {
         try {
             employee = employeeRepository.findById(employee.getId()).orElse(null);
             if (employee == null) {
-                throw new CustomException("No se encontro ningun employee con el id indicado");
+                throw new CustomException("No se encontro ningun employee con el id indicado ");
             }
 
             EmployeeSalaryDto employeeSalaryDto = new EmployeeSalaryDto();
@@ -69,7 +72,7 @@ public class PayrollServiceImpl implements PayrollService {
             employeeSalaryDto.setUsername(employee.getUser().getUsername());
 
             if (employee.getDeductions() == null || employee.getDeductions() == 0) {
-                employee.setDeductions(DEFAULT_DEDUCTION);
+                employee.setDeductions(DEFAULTDEDUCTION);
             }
             double netSalary = (employee.getBonuses() + employee.getSalary());
             netSalary = netSalary - netSalary * employee.getDeductions() * 0.01;
@@ -113,8 +116,8 @@ public class PayrollServiceImpl implements PayrollService {
                 employee.setDeductions(payroll.getDeductions());
             }
             if (employee.getDeductions() == null) {
-                employee.setDeductions(DEFAULT_DEDUCTION);
-                payroll.setDeductions(DEFAULT_DEDUCTION);
+                employee.setDeductions(DEFAULTDEDUCTION);
+                payroll.setDeductions(DEFAULTDEDUCTION);
             }
 
             if (payroll.getBaseSalary() == null) {
@@ -222,7 +225,7 @@ public class PayrollServiceImpl implements PayrollService {
         BiPredicate<Double, Double> param1NullorGt = (a, b) -> a == null || a > b;
         BiPredicate<Double, Double> param1Nullorlt = (a, b) -> a == null || a < b;
         list = list.stream()
-                .filter(p -> param1NullOrEqual.test(filterPayrollDto.getEmployee_id(), p.getEmployee().getId()))
+                .filter(p -> param1NullOrEqual.test(filterPayrollDto.getEmployeeId(), p.getEmployee().getId()))
                 .filter(p -> param1NullOrEqual.test(filterPayrollDto.getLastname1(),
                         p.getEmployee().getUser().getLastname1()))
                 .filter(p -> param1NullOrEqual.test(filterPayrollDto.getLastname2(),
@@ -242,43 +245,6 @@ public class PayrollServiceImpl implements PayrollService {
                 .filter(p -> param1NullOrEqual.test(filterPayrollDto.getYear(), getYear(p.getPaymentDate())))
                 .filter(p -> param1NullOrEqual.test(filterPayrollDto.getPaymentDate(), p.getPaymentDate()))
                 .filter(p -> param1NullOrEqual.test(filterPayrollDto.getStauts(), p.getStauts()))
-                .toList();
-
-        list = list.stream()
-                .filter(payroll -> filterPayrollDto.getEmployee_id() == null
-                        || filterPayrollDto.getEmployee_id().equals(payroll.getEmployee().getId()))
-                .filter(payroll -> filterPayrollDto.getLastname1() == null
-                        || filterPayrollDto.getLastname1().equals(payroll.getEmployee().getUser().getLastname1()))
-                .filter(payroll -> filterPayrollDto.getLastname2() == null
-                        || filterPayrollDto.getLastname2().equals(payroll.getEmployee().getUser().getLastname2()))
-                .filter(payroll -> filterPayrollDto.getName() == null
-                        || filterPayrollDto.getName().equals(payroll.getEmployee().getUser().getName()))
-                .filter(payroll -> filterPayrollDto.getUsername() == null
-                        || filterPayrollDto.getUsername().equals(payroll.getEmployee().getUser().getUsername()))
-                .filter(payroll -> filterPayrollDto.getMaxBounses() == null
-                        || filterPayrollDto.getMaxBounses() > payroll.getBonuses())
-                .filter(payroll -> filterPayrollDto.getMinBounses() == null
-                        || filterPayrollDto.getMinBounses() < payroll.getBonuses())
-                .filter(payroll -> filterPayrollDto.getMaxDeductions() == null
-                        || filterPayrollDto.getMaxDeductions() > payroll.getDeductions())
-                .filter(payroll -> filterPayrollDto.getMinDeductions() == null
-                        || filterPayrollDto.getMinDeductions() < payroll.getDeductions())
-                .filter(payroll -> filterPayrollDto.getMaxSalary() == null
-                        || filterPayrollDto.getMaxSalary() > payroll.getBaseSalary())
-                .filter(payroll -> filterPayrollDto.getMinSalary() == null
-                        || filterPayrollDto.getMinSalary() < payroll.getBaseSalary())
-                .filter(payroll -> filterPayrollDto.getMaxnNtSalary() == null
-                        || filterPayrollDto.getMaxnNtSalary() > payroll.getNetSalary())
-                .filter(payroll -> filterPayrollDto.getMinNetSalary() == null
-                        || filterPayrollDto.getMinNetSalary() < payroll.getNetSalary())
-                .filter(payroll -> filterPayrollDto.getMonth() == null
-                        || filterPayrollDto.getMonth().equals(getMonth(payroll.getPaymentDate())))
-                .filter(payroll -> filterPayrollDto.getYear() == null
-                        || filterPayrollDto.getYear().equals(getYear(payroll.getPaymentDate())))
-                .filter(payroll -> filterPayrollDto.getPaymentDate() == null
-                        || filterPayrollDto.getPaymentDate().equals(payroll.getPaymentDate()))
-                .filter(payroll -> filterPayrollDto.getStauts() == null
-                        || filterPayrollDto.getStauts() == payroll.getStauts())
                 .toList();
 
         for (Payroll payroll : list) {
@@ -302,18 +268,20 @@ public class PayrollServiceImpl implements PayrollService {
 
     private PayrollDto buildPayrollDto(Payroll payroll, Employee employee) {
 
-        return new PayrollDto(
-                employee.getUser().getUsername(),
-                employee.getUser().getName(),
-                employee.getUser().getLastname1(),
-                employee.getUser().getLastname2(),
-                payroll.getBaseSalary(),
-                payroll.getBonuses(),
-                payroll.getDeductions(),
-                payroll.getNetSalary(),
-                payroll.getPaymentDate(),
-                payroll.getPaymentStatus(),
-                payroll.getStauts());
+        PayrollDto payrollDto = new PayrollDto();
+        payrollDto.setUsername(employee.getUser().getUsername());
+        payrollDto.setName(employee.getUser().getName());
+        payrollDto.setLastname1(employee.getUser().getLastname1());
+        payrollDto.setLastename2(employee.getUser().getLastname2());
+        payrollDto.setBaseSalary(payroll.getBaseSalary());
+        payrollDto.setBonuses(payroll.getBonuses());
+        payrollDto.setDeductions(payroll.getDeductions());
+        payrollDto.setNetSalary(payroll.getNetSalary());
+        payrollDto.setPaymentDate(payroll.getPaymentDate());
+        payrollDto.setPaymentStatus(payroll.getPaymentStatus());
+        payrollDto.setStauts(payroll.getStauts());
+
+        return payrollDto;
     }
 
     @Override

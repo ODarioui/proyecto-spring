@@ -21,20 +21,12 @@ public class PayrollDto {
     public PayrollDto() {
     }
 
-    public PayrollDto(String username, String name, String lastname1, String lastename2, double baseSalary,
-            Double bonuses, Double deductions, Double netSalary, Date paymentDate, String paymentStatus,
-            PayrollStauts stauts) {
+    public PayrollDto(String username, double baseSalary,
+            Double bonuses, Double deductions) {
         this.username = username;
-        this.name = name;
-        this.lastname1 = lastname1;
-        this.lastename2 = lastename2;
         this.baseSalary = baseSalary;
         this.bonuses = bonuses;
         this.deductions = deductions;
-        this.netSalary = netSalary;
-        this.paymentDate = paymentDate;
-        this.paymentStatus = paymentStatus;
-        this.stauts = stauts;
     }
 
     public String getUsername() {

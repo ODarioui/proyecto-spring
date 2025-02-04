@@ -9,6 +9,7 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Employee;
 @Repository
 public interface EmployeeRepository extends JpaRepository<Employee, Long> {
 
+    @SuppressWarnings("null")
     boolean existsById(Long id);
 
     List<Employee> findByDepartmentId(Long departmentId);

@@ -1,6 +1,5 @@
 package com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -54,9 +53,9 @@ class EmployeeServiceTest {
     private EmployeeServiceImpl employeeService;
 
     @Test
-    void registerEmployeeTest(){
+    void registerEmployeeTest() {
         EmployeeDto request = new EmployeeDto();
-        
+
         request.setUserId(1L);
         request.setDepartmentId(10L);
         request.setBirthDate(new Date(0));
@@ -66,7 +65,7 @@ class EmployeeServiceTest {
         request.setPosition("Junior");
         request.setSalary(1500);
         request.setStatus("active");
-        
+
         User user = new User();
         when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
@@ -79,7 +78,7 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void getEmployeesTest(){
+    void getEmployeesTest() {
         List<Employee> employees = List.of(new Employee(), new Employee());
 
         when(employeeRepository.findAll()).thenReturn(employees);
@@ -94,7 +93,7 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void updateEmployeeTest(){
+    void updateEmployeeTest() {
         Employee employee = new Employee();
         employee.setBonuses(240.0);
 
@@ -108,23 +107,24 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void deleteEmployeeTest(){
+    void deleteEmployeeTest() {
         Long id = 1L;
         Employee employee = new Employee();
         when(employeeRepository.findById(id)).thenReturn(Optional.of(employee));
 
-        //Asignar department head al empleado para comprobar el forEach del deleteEmployee
+        // Asignar department head al empleado para comprobar el forEach del
+        // deleteEmployee
         DepartmentHead departmentHead = new DepartmentHead();
         when(departmentHeadRepository.findByEmployee(employee)).thenReturn(List.of(departmentHead));
         when(absenceRepository.findByEmployee(employee)).thenReturn(List.of());
 
         employeeService.deleteEmployee(id);
 
-        verify(employeeRepository,times(1)).deleteById(id);
+        verify(employeeRepository, times(1)).deleteById(id);
         verify(departmentHeadRepository, times(1)).findByEmployee(employee);
         verify(absenceRepository, times(1)).deleteAll(List.of());
 
-        //Verificar que testea bien la excepcion cuando no encuentra al empleado
+        // Verificar que testea bien la excepcion cuando no encuentra al empleado
         when(employeeRepository.findById(id)).thenReturn(Optional.empty());
 
         assertThrows(IllegalArgumentException.class, () -> employeeService.deleteEmployee(id));
@@ -132,7 +132,7 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void getEmployeeTest(){
+    void getEmployeeTest() {
         Long id = 2L;
         Employee employee = new Employee();
 
@@ -148,7 +148,7 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void getNetSalaryTest(){
+    void getNetSalaryTest() {
         Long id = 1L;
         Employee employee = new Employee();
 
@@ -156,16 +156,16 @@ class EmployeeServiceTest {
         employee.setSalary(1500.0);
         employee.setDeductions(100.0);
         employee.setBonuses(200.0);
-        
+
         when(employeeRepository.findById(id)).thenReturn(Optional.of(employee));
-        
+
         double netSalary = employeeService.getNetSalary(id);
 
         assertEquals(1600.0, netSalary);
     }
 
     @Test
-    void updateDepartmentPosTest(){
+    void updateDepartmentPosTest() {
         Long id = 2L;
         Long newDepartmentId = 3L;
         String newPosition = "Junior";
@@ -183,21 +183,21 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void updateStatusTest(){
+    void updateStatusTest() {
         Long id = 2L;
         Employee employee = new Employee();
         String newStatus = "INACTIVE";
 
         when(employeeRepository.findById(id)).thenReturn(Optional.of(employee));
-        
+
         employeeService.updateStatus(id, newStatus);
 
         assertEquals(newStatus, employee.getStatus());
-    
+
     }
 
     @Test
-    void calculateAvailableVacationDaysTest(){
+    void calculateAvailableVacationDaysTest() {
         Long id = 2L;
         Employee employee = new Employee();
         employee.setAvailableVacationDays(20);
@@ -208,12 +208,12 @@ class EmployeeServiceTest {
         absence1.setAbsenceType("Vacaciones");
         absence1.setStatus("Aprobada");
         absence1.setStartDate(LocalDate.of(2023, 3, 15));
-        absence1.setEndDate(LocalDate.of(2023, 3, 20));  
+        absence1.setEndDate(LocalDate.of(2023, 3, 20));
 
         Absence absence2 = new Absence();
         absence2.setAbsenceType("Vacaciones");
         absence2.setStatus("Aprobada");
-        absence2.setStartDate(LocalDate.of(2023, 3, 22)); 
+        absence2.setStartDate(LocalDate.of(2023, 3, 22));
         absence2.setEndDate(LocalDate.of(2023, 3, 24));
 
         when(absenceRepository.findByEmployee(employee)).thenReturn(List.of(absence1, absence2));
@@ -223,7 +223,7 @@ class EmployeeServiceTest {
     }
 
     @Test
-    void calculateAvailableVacationDaysTest_NoVacationAbsence(){
+    void calculateAvailableVacationDaysTest_NoVacationAbsence() {
         Long id = 2L;
         Employee employee = new Employee();
         employee.setAvailableVacationDays(20);
@@ -234,18 +234,17 @@ class EmployeeServiceTest {
         absence1.setAbsenceType("Vacaciones");
         absence1.setStatus("Aprobada");
         absence1.setStartDate(LocalDate.of(2023, 3, 15));
-        absence1.setEndDate(LocalDate.of(2023, 3, 20));  
+        absence1.setEndDate(LocalDate.of(2023, 3, 20));
 
         Absence absence2 = new Absence();
         absence2.setAbsenceType("Enfermedad");
         absence2.setStatus("Aprobada");
-        absence2.setStartDate(LocalDate.of(2023, 3, 22)); 
+        absence2.setStartDate(LocalDate.of(2023, 3, 22));
         absence2.setEndDate(LocalDate.of(2023, 3, 24));
 
         when(absenceRepository.findByEmployee(employee)).thenReturn(List.of(absence1, absence2));
 
         assertEquals(14, employeeService.calculateAvailableVacationDays(id));
     }
-
 
 }

@@ -11,7 +11,6 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.PayrollService
 
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -24,8 +23,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 @RequestMapping("/api/v1/payroll")
 public class PayrollController {
 
-    @Autowired
-    private PayrollService payrollService;
+    private final PayrollService payrollService;
+
+    PayrollController(PayrollService payrollService) {
+        this.payrollService = payrollService;
+    }
 
     @Secured({ "ROLE_HR", "ROLE_ADMIN" })
     @GetMapping("/calculate-salary")
@@ -61,7 +63,7 @@ public class PayrollController {
         ResponseDto responseDto = new ResponseDto();
         responseDto.setObject(payrollService.getPayrolls(filterPayrollDto));
         responseDto.setDate(new Date());
-        responseDto.setMessage("Lista de nominas");
+        responseDto.setMessage("Lista de nominas filtrado");
         responseDto.setStatus(HttpStatus.OK.value());
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }
@@ -72,7 +74,7 @@ public class PayrollController {
         ResponseDto responseDto = new ResponseDto();
         responseDto.setObject(payrollService.getPayrollsEmployee(filterPayrollDto));
         responseDto.setDate(new Date());
-        responseDto.setMessage("Lista de nominas");
+        responseDto.setMessage("Lista de nominas empleado");
         responseDto.setStatus(HttpStatus.OK.value());
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
     }

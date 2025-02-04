@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -28,7 +28,7 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.ResponseDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.PayrollService;
 
 @SpringBootTest
-public class PayrollControllerTest {
+class PayrollControllerTest {
 
     private final Employee employee = new Employee();
     private final EmployeeSalaryDto employeeSalaryDto = new EmployeeSalaryDto();
@@ -37,20 +37,21 @@ public class PayrollControllerTest {
     private final FilterPayrollDto filterPayrollDto = new FilterPayrollDto();
     private final List<PayrollDto> listOfPayrolls = new ArrayList<>();
     private final PayrollCostsDto payrollCostsDto = new PayrollCostsDto();
+
     @InjectMocks
     private PayrollController payrollController;
 
     @Mock
     private PayrollService payrollService;
 
-    @Before
-    public void init() {
-        MockitoAnnotations.openMocks(this);
+    @BeforeAll
+    static void init() {
+        MockitoAnnotations.openMocks(PayrollControllerTest.class);
     }
 
     @SuppressWarnings("null")
     @Test
-    public void calcSalaryEmployeeTest() {
+    void calcSalaryEmployeeTest() {
         Mockito.when(payrollService.calculateSalaryEmployee(employee)).thenReturn(employeeSalaryDto);
         ResponseEntity<ResponseDto> response = payrollController.calcSalaryEmployee(employee);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -62,7 +63,7 @@ public class PayrollControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void generatePayrollTest() {
+    void generatePayrollTest() {
         Mockito.when(payrollService.generateNewPayroll(payroll)).thenReturn(payrollDto);
         ResponseEntity<ResponseDto> response = payrollController.generatePayroll(payroll);
         assertEquals(HttpStatus.CREATED, response.getStatusCode());
@@ -74,31 +75,31 @@ public class PayrollControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void filtterPayrollsTest() {
+    void filtterPayrollsTest() {
         Mockito.when(payrollService.getPayrolls(filterPayrollDto)).thenReturn(listOfPayrolls);
         ResponseEntity<ResponseDto> response = payrollController.filtterPayrolls(filterPayrollDto);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("Lista de nominas", response.getBody().getMessage());
+        assertEquals("Lista de nominas filtrado", response.getBody().getMessage());
         assertTrue(response.getBody().getDate() instanceof Date);
         assertNotNull(response.getBody().getObject());
     }
 
     @SuppressWarnings("null")
     @Test
-    public void getPayrollsEmployeeTest() {
+    void getPayrollsEmployeeTest() {
         Mockito.when(payrollService.getPayrollsEmployee(filterPayrollDto)).thenReturn(listOfPayrolls);
         ResponseEntity<ResponseDto> response = payrollController.getPayrollsEmployee(filterPayrollDto);
         assertEquals(HttpStatus.OK, response.getStatusCode());
         assertNotNull(response.getBody());
-        assertEquals("Lista de nominas", response.getBody().getMessage());
+        assertEquals("Lista de nominas empleado", response.getBody().getMessage());
         assertTrue(response.getBody().getDate() instanceof Date);
         assertNotNull(response.getBody().getObject());
     }
 
     @SuppressWarnings("null")
     @Test
-    public void getCostsTest() {
+    void getCostsTest() {
         Mockito.when(payrollService.getReport(filterPayrollDto)).thenReturn(payrollCostsDto);
         ResponseEntity<ResponseDto> response = payrollController.getCosts(filterPayrollDto);
         assertEquals(HttpStatus.OK, response.getStatusCode());
@@ -110,7 +111,7 @@ public class PayrollControllerTest {
 
     @SuppressWarnings("null")
     @Test
-    public void paymentCycleTest() {
+    void paymentCycleTest() {
         Mockito.when(payrollService.setPaymentCycle(payroll)).thenReturn(listOfPayrolls);
         ResponseEntity<ResponseDto> response = payrollController.paymentCycle(payroll);
         assertEquals(HttpStatus.OK, response.getStatusCode());

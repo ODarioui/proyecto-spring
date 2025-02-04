@@ -14,6 +14,13 @@ public class EmployeeSalaryDto {
     public EmployeeSalaryDto() {
     }
 
+    public EmployeeSalaryDto(String username, Double baseSalary, Double bonuses, Double deductions) {
+        this.username = username;
+        this.baseSalary = baseSalary;
+        this.bonuses = bonuses;
+        this.deductions = deductions;
+    }
+
     public String getUsername() {
         return this.username;
     }

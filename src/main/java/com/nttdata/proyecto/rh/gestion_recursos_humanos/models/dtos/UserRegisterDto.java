@@ -18,6 +18,12 @@ public class UserRegisterDto {
     public UserRegisterDto() {
     }
 
+    public UserRegisterDto(String username,
+            String password) {
+        this.username = username;
+        this.password = password;
+    }
+
     public String getName() {
         return this.name;
     }

@@ -2,7 +2,6 @@ package com.nttdata.proyecto.rh.gestion_recursos_humanos.controllers;
 
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,11 +18,15 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.DepartmentHead
 @RequestMapping("/api/v1/department-head")
 public class DepartmentHeadController {
 
-    @Autowired
-    private DepartmentHeadService departmentHeadService;
+    private final DepartmentHeadService departmentHeadService;
 
-    @Autowired
-    private DepartmentHeadRepository departmentHeadRepository;
+    private final DepartmentHeadRepository departmentHeadRepository;
+
+    public DepartmentHeadController(DepartmentHeadService departmentHeadService,
+            DepartmentHeadRepository departmentHeadRepository) {
+        this.departmentHeadService = departmentHeadService;
+        this.departmentHeadRepository = departmentHeadRepository;
+    }
 
     @PostMapping("/register/{departmentId}")
     public ResponseEntity<DepartmentHead> registerDepartmentHead(@PathVariable Long departmentId,

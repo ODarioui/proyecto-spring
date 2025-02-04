@@ -8,8 +8,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -23,7 +23,7 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.ResponseDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.ProjectService;
 
 @SpringBootTest
-public class ProjectControllerTest {
+class ProjectControllerTest {
 
     private final Project project = new Project();
     private final Map<String, Object> map = new HashMap<>();
@@ -33,14 +33,14 @@ public class ProjectControllerTest {
     @Mock
     private ProjectService projectService;
 
-    @Before
-    public void init() {
+    @BeforeEach
+    void init() {
         MockitoAnnotations.openMocks(this);
     }
 
     @SuppressWarnings("null")
     @Test
-    public void addTest() {
+    void addTest() {
         Mockito.when(projectService.addProject(project)).thenReturn(map);
         ResponseEntity<ResponseDto> response = projectController.add(project);
 

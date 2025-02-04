@@ -118,7 +118,7 @@ public class UserController {
         responseDto.setDate(new Date());
         try {
             UserDto userDto = userService.updateAnyUser(user);
-            responseDto.setMessage("Usuario actualizado");
+            responseDto.setMessage("Usuario actualizado por admin");
             responseDto.setStatus(HttpStatus.OK.value());
             responseDto.setObject(userDto);
             return ResponseEntity.ok().body(responseDto);
@@ -137,7 +137,7 @@ public class UserController {
         responseDto.setDate(new Date());
         try {
             UserDto userDto = userService.updateEmployee(user);
-            responseDto.setMessage("Usuario actualizado");
+            responseDto.setMessage("Usuario actualizado por HR");
             responseDto.setStatus(HttpStatus.OK.value());
             responseDto.setObject(userDto);
             return ResponseEntity.ok().body(responseDto);

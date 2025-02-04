@@ -4,7 +4,7 @@ public enum PaymentFrequency {
     DAYLY(1),
     WEEKLY(2),
     MONTHLY(3),
-    ANNUALLY$(4);
+    ANNUALLY(4);
 
     private final int value;
 

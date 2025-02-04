@@ -2,7 +2,6 @@ package com.nttdata.proyecto.rh.gestion_recursos_humanos.controllers;
 
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,8 +17,11 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.GoalService;
 @RequestMapping("/api/v1/goal")
 public class GoalController {
 
-    @Autowired
-    private GoalService goalService;
+    private final GoalService goalService;
+
+    GoalController(GoalService goalService) {
+        this.goalService = goalService;
+    }
 
     @PostMapping("/add")
     public ResponseEntity<ResponseDto> add(@RequestBody Goal goal) {

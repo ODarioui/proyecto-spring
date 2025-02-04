@@ -1,6 +1,5 @@
 package com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.exceptions.CustomException;
@@ -13,8 +12,11 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.PayrollCycleSe
 @Service
 public class PayrollCycleServiceImpl implements PayrollCycleService {
 
-    @Autowired
-    private PayrollCycleRepository payrollCycleRepository;
+    private final PayrollCycleRepository payrollCycleRepository;
+
+    PayrollCycleServiceImpl(PayrollCycleRepository payrollCycleRepository) {
+        this.payrollCycleRepository = payrollCycleRepository;
+    }
 
     @Override
     public PayrollCycle addPayrollCycle(PayrollCycle payrollCycle) {

@@ -6,6 +6,14 @@ public class ChangePasswordDto {
 
     private String newPassword;
 
+    public ChangePasswordDto(String curretnPassword, String newPassword) {
+        this.curretnPassword = curretnPassword;
+        this.newPassword = newPassword;
+    }
+
+    public ChangePasswordDto() {
+    }
+
     public String getCurretnPassword() {
         return this.curretnPassword;
     }

@@ -42,7 +42,6 @@ public class AuthWeb {
                     "/register", user,
                     ResponseDto.class);
 
-            System.out.println("username " + user.getUsername());
             if (response.getBody().getStatus() == HttpStatus.BAD_REQUEST.value()) {
                 model.addAttribute("error", response.getBody().getMessage());
             }

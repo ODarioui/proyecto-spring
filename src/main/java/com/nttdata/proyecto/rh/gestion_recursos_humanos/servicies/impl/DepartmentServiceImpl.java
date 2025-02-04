@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.exceptions.DepartmentException;
@@ -23,17 +22,21 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.DepartmentServ
 @Service
 public class DepartmentServiceImpl implements DepartmentService {
 
-    @Autowired
-    private DepartmentRepository departmentRepository;
+    private final DepartmentRepository departmentRepository;
 
-    @Autowired
-    private DepartmentHeadRepository departmentHeadRepository;
+    private final DepartmentHeadRepository departmentHeadRepository;
 
-    @Autowired
-    private EmployeeRepository employeeRepository;
+    private final EmployeeRepository employeeRepository;
 
-    @Autowired
-    private ProjectRepository projectRepository;
+    private final ProjectRepository projectRepository;
+
+    DepartmentServiceImpl(DepartmentRepository departmentRepository, DepartmentHeadRepository departmentHeadRepository,
+            EmployeeRepository employeeRepository, ProjectRepository projectRepository) {
+        this.departmentRepository = departmentRepository;
+        this.departmentHeadRepository = departmentHeadRepository;
+        this.employeeRepository = employeeRepository;
+        this.projectRepository = projectRepository;
+    }
 
     @Override
     public Department createDepartment(Department department) {
@@ -86,7 +89,7 @@ public class DepartmentServiceImpl implements DepartmentService {
 
     @Override
     public Map<String, Object> getEmployeesByDepartment(Long departmentId) {
-        Optional<Department> department = null;
+        Optional<Department> department;
         Map<String, Object> map = new HashMap<>();
         List<Employee> employees = null;
         try {

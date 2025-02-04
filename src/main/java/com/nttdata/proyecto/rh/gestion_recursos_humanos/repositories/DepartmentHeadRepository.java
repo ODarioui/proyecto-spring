@@ -14,6 +14,7 @@ public interface DepartmentHeadRepository extends JpaRepository<DepartmentHead, 
 
     Optional<DepartmentHead> findByDepartmentId(Long departmentId);
 
+    @SuppressWarnings("null")
     boolean existsById(Long id);
 
     List<DepartmentHead> findByEmployee(Employee head);

@@ -8,6 +8,8 @@ class GestionRecursosHumanosApplicationTests {
 
 	@Test
 	void contextLoads() {
+		GestionRecursosHumanosApplication.main(new String[] {});
+
 	}
 
 }

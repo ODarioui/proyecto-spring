@@ -1,6 +1,5 @@
 package com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.impl;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.exceptions.DepartmentException;
@@ -11,8 +10,11 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.GoalService;
 @Service
 public class GoalServiceImpl implements GoalService {
 
-    @Autowired
-    private GoalRepository goalRepository;
+    private final GoalRepository goalRepository;
+
+    GoalServiceImpl(GoalRepository goalRepository) {
+        this.goalRepository = goalRepository;
+    }
 
     @Override
     public Goal addGoal(Goal goal) {

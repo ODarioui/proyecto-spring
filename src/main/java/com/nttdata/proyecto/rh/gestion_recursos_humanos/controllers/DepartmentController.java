@@ -2,7 +2,6 @@ package com.nttdata.proyecto.rh.gestion_recursos_humanos.controllers;
 
 import java.util.Date;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -27,8 +26,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/api/v1/department")
 public class DepartmentController {
 
-    @Autowired
-    private DepartmentService departmentService;
+    private final DepartmentService departmentService;
+
+    public DepartmentController(DepartmentService departmentService) {
+        this.departmentService = departmentService;
+    }
 
     @PostMapping("/add")
     public ResponseEntity<ResponseDto> addDeparment(@RequestBody Department department) {
@@ -88,7 +90,7 @@ public class DepartmentController {
         return ResponseEntity.ok().body(responseDto);
     }
 
-    @GetMapping("/department-employees/{department_id}")
+    @GetMapping("/department-employees/{departmentId}")
     public ResponseEntity<ResponseDto> listEmployeesDepartment(@PathVariable Long departmentId) {
 
         ResponseDto responseDto = new ResponseDto();

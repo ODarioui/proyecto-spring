@@ -6,8 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.Date;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
@@ -19,7 +19,7 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Goal;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.ResponseDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.GoalService;
 
-public class GoalControllerTest {
+class GoalControllerTest {
 
     private final Goal goal = new Goal();
 
@@ -29,14 +29,14 @@ public class GoalControllerTest {
     @Mock
     private GoalService goalService;
 
-    @Before
-    public void init() {
+    @BeforeEach
+    void init() {
         MockitoAnnotations.openMocks(this);
     }
 
     @SuppressWarnings("null")
     @Test
-    public void addTest() {
+    void addTest() {
         Mockito.when(goalService.addGoal(goal)).thenReturn(goal);
         ResponseEntity<ResponseDto> response = goalController.add(goal);
 

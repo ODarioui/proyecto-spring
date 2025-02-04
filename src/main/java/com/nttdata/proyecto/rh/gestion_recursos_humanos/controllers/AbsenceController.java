@@ -2,6 +2,7 @@ package com.nttdata.proyecto.rh.gestion_recursos_humanos.controllers;
 
 import org.springframework.web.bind.annotation.RestController;
 
+import com.nttdata.proyecto.rh.gestion_recursos_humanos.exceptions.CustomException;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.Absence;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos.AbsenceRequestDto;
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.AbsenceService;
@@ -10,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -23,16 +23,19 @@ import org.springframework.web.bind.annotation.RequestBody;
 @RequestMapping("/api/absences")
 public class AbsenceController {
 
-    @Autowired
-    private AbsenceService absenceService;
+    private final AbsenceService absenceService;
+
+    public AbsenceController(AbsenceService absenceService) {
+        this.absenceService = absenceService;
+    }
 
     @PostMapping("/register")
-    public ResponseEntity<?> registerAbsence(@RequestBody AbsenceRequestDto newAbsence) {
+    public ResponseEntity<Absence> registerAbsence(@RequestBody AbsenceRequestDto newAbsence) {
         try {
             Absence registeredAbsence = absenceService.registerAbsence(newAbsence);
             return new ResponseEntity<>(registeredAbsence, HttpStatus.CREATED);
         } catch (Exception e) {
-            return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
+            throw new CustomException(e.getMessage());
         }
     }
 
@@ -40,28 +43,28 @@ public class AbsenceController {
     @PostMapping("/approve-absence/{absenceId}")
     public ResponseEntity<String> approveAbsence(@PathVariable Long absenceId) {
         try {
-            absenceService.updateStatus(absenceId,"Aprobada");
+            absenceService.updateStatus(absenceId, "Aprobada");
             return ResponseEntity.ok("Ausencia aceptada");
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        
+
     }
 
     @Secured({ "ROLE_HR", "ROLE_ADMIN" })
     @PostMapping("/reject-absence/{absenceId}")
     public ResponseEntity<String> rejectAbsence(@PathVariable Long absenceId) {
         try {
-            absenceService.updateStatus(absenceId,"Rechazada");
+            absenceService.updateStatus(absenceId, "Rechazada");
             return ResponseEntity.ok("Ausencia rechazada");
         } catch (Exception e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-        
+
     }
 
     @GetMapping("/get-history/{id}")
-    public ResponseEntity<?> getAbsenceHistory(@PathVariable Long id) {
+    public ResponseEntity<List<Absence>> getAbsenceHistory(@PathVariable Long id) {
         try {
             List<Absence> history = absenceService.getAbsenceHistory(id);
             return ResponseEntity.ok(history);
@@ -71,7 +74,7 @@ public class AbsenceController {
     }
 
     @GetMapping("/vacation-history/{employeeId}")
-    public ResponseEntity<?> getVacationHistory(@PathVariable Long employeeId) {
+    public ResponseEntity<List<Absence>> getVacationHistory(@PathVariable Long employeeId) {
         try {
             List<Absence> vacations = absenceService.getVacationHistory(employeeId);
             return ResponseEntity.ok(vacations);
@@ -79,6 +82,5 @@ public class AbsenceController {
             return ResponseEntity.badRequest().body(null);
         }
     }
-    
-    
+
 }

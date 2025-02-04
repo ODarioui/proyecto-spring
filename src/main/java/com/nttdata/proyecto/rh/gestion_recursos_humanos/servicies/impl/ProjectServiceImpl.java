@@ -3,7 +3,6 @@ package com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.impl;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.nttdata.proyecto.rh.gestion_recursos_humanos.exceptions.DepartmentException;
@@ -16,8 +15,11 @@ import com.nttdata.proyecto.rh.gestion_recursos_humanos.servicies.ProjectService
 @Service
 public class ProjectServiceImpl implements ProjectService {
 
-    @Autowired
-    private ProjectRepository projectRepository;
+    private final ProjectRepository projectRepository;
+
+    ProjectServiceImpl(ProjectRepository projectRepository) {
+        this.projectRepository = projectRepository;
+    }
 
     @Override
     public Map<String, Object> addProject(Project project) {

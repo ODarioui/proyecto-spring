@@ -1,6 +1,5 @@
 package com.nttdata.proyecto.rh.gestion_recursos_humanos.models.dtos;
 
-import java.sql.Date;
 import java.time.LocalDate;
 
 public class AbsenceRequestDto {
