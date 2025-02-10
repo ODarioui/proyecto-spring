@@ -1,7 +1,7 @@
 pipeline {
     agent any
 
-    enviroment {
+    environment {
         gitcommit = "${gitcommit}"
     }
 
@@ -21,5 +21,5 @@ pipeline {
           }  
         }
     }
-    
+
 }
