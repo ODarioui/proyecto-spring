@@ -40,13 +40,14 @@ pipeline {
             }
         }
 
-        stage('Sonar') {
+        stage("build & SonarQube Scanner") {
             steps {
-              withSonarQubeEnv('sonar') {
-                sh "mvn sonar:sonar -Dsonar.host.url=sonarqube:9000 -Dsonar.login=${SONAR_LOGIN}"
-              }
+                withSonarQubeEnv('SonarQube Scanner') {
+                    sh 'mvn clean package sonar:sonar'
+                }
             }
         }
+
     }
 
 }
