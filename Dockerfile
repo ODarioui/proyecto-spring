@@ -1,4 +1,4 @@
-FROM maven:alpine
+FROM maven:3.6.2-alpine
 WORKDIR /grh
 ADD . /grh
 EXPOSE 3000
