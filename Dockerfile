@@ -1,4 +1,4 @@
-FROM maven-alpine
+FROM maven:latest-alpine
 WORKDIR /appmavenjenkins
 ADD . /appmavenjenkins
 EXPOSE 3000
