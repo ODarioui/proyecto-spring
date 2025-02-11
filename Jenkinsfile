@@ -43,11 +43,7 @@ pipeline {
         stage('Sonar') {
             steps {
               withSonarQubeEnv('sonar') {
-                sh """
-                    mvn sonar:sonar \ 
-                    -Dsonar.host.url=sonarqube:9000
-                    -Dsonar.login
-                """
+                sh "mvn sonar:sonar -Dsonar.host.url=sonarqube:9000 -Dsonar.login=${SONAR_LOGIN}"
               }
             }
         }
