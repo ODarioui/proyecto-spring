@@ -40,7 +40,7 @@ pipeline {
             }
         }
 
-        stage("build & SonarQube Scanner") {
+        stage("Sonar") {
             steps {
                 withSonarQubeEnv('SonarQube Scanner') {
                     sh 'mvn clean package sonar:sonar'
@@ -48,7 +48,7 @@ pipeline {
             }
         }
 
-        stage('Docker Build & Push') {
+        stage('Docker build') {
           steps {
             script {
               docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {
