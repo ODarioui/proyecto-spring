@@ -48,6 +48,17 @@ pipeline {
             }
         }
 
+        stage('Docker Build & Push') {
+          steps {
+            script {
+              docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {
+                def appmavenjenkins = docker.build("dariouio/GRH:${gitcommit}", ".")
+                appmavenjenkins.push()
+              }
+            }  
+          }  
+        }
+
     }
 
 }
