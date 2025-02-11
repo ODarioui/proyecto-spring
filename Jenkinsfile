@@ -50,6 +50,7 @@ pipeline {
 
         stage('Docker build') {
           steps {
+            sh 'chmod +x ./deliver.sh'
             script {
               docker.withRegistry('https://registry.hub.docker.com', 'docker-hub') {
                 def appmavenjenkins = docker.build("dariouio/grh:${gitcommit}", ".")
