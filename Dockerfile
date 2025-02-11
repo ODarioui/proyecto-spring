@@ -1,5 +1,4 @@
 FROM maven:alpine
-WORKDIR /appmavenjenkins
-ADD . /appmavenjenkins
+WORKDIR /grh
+ADD . /grh
 EXPOSE 3000
-CMD jenkins/scripts/deliver.sh
